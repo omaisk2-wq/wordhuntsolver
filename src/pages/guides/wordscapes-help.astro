@@ -1,0 +1,85 @@
+---
+import Layout from "../../layouts/Layout.astro";
+
+const faqs = [
+  { q: "Why do some words not count in Wordscapes?", a: "They may be valid dictionary words but only qualify as bonus words in that specific level, not part of the main crossword answer." },
+  { q: "Is this an official Wordscapes tool?", a: "No, this is an independent tool and is not affiliated with or endorsed by PeopleFun, the maker of Wordscapes." },
+  { q: "Does it work for every level?", a: "It checks against a broad English dictionary, which covers the vast majority of Wordscapes levels." },
+  { q: "Is it free to use?", a: "Yes, wordscapes help on this site is completely free." },
+  { q: "Can I search by starting letter?", a: "Yes, use the starts with filter to narrow your results." },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({ "@type": "Question", name: f.q, acceptedAnswer: { "@type": "Answer", text: f.a } })),
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: "https://www.wordhuntsolver.ai/" },
+      { "@type": "ListItem", position: 2, name: "Guides", item: "https://www.wordhuntsolver.ai/guides" },
+      { "@type": "ListItem", position: 3, name: "Wordscapes Help", item: "https://www.wordhuntsolver.ai/guides/wordscapes-help" },
+    ],
+  },
+];
+---
+
+<Layout
+  title="Wordscapes Help: Answers for Every Level"
+  description="Stuck in Wordscapes? Get instant wordscapes help and a full cheat sheet answer for every level, plus tips on bonus words."
+  path="/guides/wordscapes-help"
+  schema={schema}
+>
+  <article class="mx-auto max-w-3xl px-4 py-10 sm:py-16">
+    <nav aria-label="Breadcrumb" class="mb-4 text-xs text-brand-400 dark:text-brand-300">
+      <a href="/" class="hover:text-accent-500">Home</a> / <a href="/guides" class="hover:text-accent-500">Guides</a> / <span>Wordscapes Help</span>
+    </nav>
+    <h1 class="text-3xl font-extrabold text-brand-700 dark:text-white sm:text-4xl">
+      Wordscapes Help: Cheats and Answers for Every Level
+    </h1>
+    <p class="mt-4 text-xs italic text-brand-400 dark:text-brand-300">Written by admin</p>
+
+    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">How to Use This Wordscapes Help Tool</h2>
+    <p class="mt-3 text-brand-500 dark:text-brand-200">
+      Wordscapes help means typing the letters shown in your puzzle circle into a solver to get every valid
+      word for that level instantly. Enter your letters, press solve, and you will see every word you can
+      spell, sorted from longest to shortest.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">Understanding Wordscapes Bonus Words</h2>
+    <p class="mt-3 text-brand-500 dark:text-brand-200">
+      Bonus words are valid words that do not fit in the crossword-style answer grid, but still earn you
+      coins. A word can be real and spellable from your letters yet still count only as a bonus word, not
+      a main puzzle answer, this is by game design, not a solver error.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">More Word Tools On This Site</h2>
+    <p class="mt-3 text-brand-500 dark:text-brand-200">
+      For a different kind of grid puzzle, try our <a href="/" class="anchor-link">word hunt solver</a>, or read the
+      <a href="/guides/word-hunt-cheat" class="anchor-link">word hunt cheat</a> guide. If you just need words from loose letters, the
+      <a href="/guides/free-word-finder" class="anchor-link">free word finder</a> works for that too.
+    </p>
+
+    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">FAQs About Wordscapes Help</h2>
+    <div class="mt-4 space-y-4">
+      {faqs.map((f) => (
+        <div class="card">
+          <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
+          <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">{f.a}</p>
+        </div>
+      ))}
+    </div>
+
+    <div class="card mt-10 flex flex-col items-center gap-4 bg-brand-500 text-center text-white dark:bg-brand-700">
+      <h2 class="text-2xl font-bold">Bottom Line</h2>
+      <p class="max-w-xl text-brand-100">
+        Wordscapes help should get you unstuck in seconds, not send you searching through ten different
+        sites. Enter your letters, get your answer, and get back to your streak.
+      </p>
+      <a href="/" class="btn-accent">Get Wordscapes Help Now</a>
+    </div>
+  </article>
+</Layout>

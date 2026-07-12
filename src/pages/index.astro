@@ -1,0 +1,241 @@
+---
+import Layout from "../layouts/Layout.astro";
+import WordHuntSolver from "../components/WordHuntSolver.tsx";
+
+const faqs = [
+  {
+    q: "Is Word Hunt the same as Boggle?",
+    a: "Word Hunt and Boggle share the same core idea, connecting adjacent letters to spell words, but Word Hunt is the GamePigeon version played inside iMessage.",
+  },
+  {
+    q: "Does Word Hunt only use a 4x4 grid?",
+    a: "No. Word Hunt boards can be 4x4 or 5x5 depending on how the game is set up. Use the rows and columns controls above to match your exact board.",
+  },
+  {
+    q: "Is Word Hunt scored like Scrabble, with different point values per letter?",
+    a: "No. Word Hunt scores are based only on word length, every letter counts the same, unlike Scrabble where letters like Q and Z are worth more.",
+  },
+  {
+    q: "Can words go diagonally, not just up, down, left or right?",
+    a: "Yes, valid words can be formed by connecting letters in any direction, including diagonally.",
+  },
+  {
+    q: "Is using a word hunt solver considered cheating?",
+    a: "It depends on how you use it. Many players use a solver in single player practice mode or casually between friends, while some prefer to play head to head without any help.",
+  },
+  {
+    q: "Is this affiliated with GamePigeon?",
+    a: "No, this is an independent tool and is not affiliated with or endorsed by GamePigeon.",
+  },
+];
+
+const schema = [
+  {
+    "@context": "https://schema.org",
+    "@type": "WebApplication",
+    name: "Word Hunt Solver",
+    url: "https://www.wordhuntsolver.ai/",
+    applicationCategory: "GameApplication",
+    operatingSystem: "Any",
+    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+    description:
+      "Enter your Word Hunt grid and get every valid word instantly. Free word hunt solver for GamePigeon and similar grid word games.",
+  },
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: { "@type": "Answer", text: f.a },
+    })),
+  },
+];
+
+const guides = [
+  {
+    href: "/guides/word-hunt-cheat",
+    title: "Word Hunt Cheat",
+    desc: "Get every GamePigeon Word Hunt answer, scoring rules, and whether using a solver counts as cheating.",
+  },
+  {
+    href: "/guides/free-word-finder",
+    title: "Free Word Finder",
+    desc: "Find words from any loose set of letters for Scrabble, Words With Friends, and more, completely free.",
+  },
+  {
+    href: "/guides/wordscapes-help",
+    title: "Wordscapes Help",
+    desc: "Stuck on a Wordscapes level? Get the full cheat sheet and understand bonus words.",
+  },
+];
+---
+
+<Layout
+  title="Word Hunt Solver: Solve Any 4x4 Board Instantly"
+  description="Solve any Word Hunt board and get word hunt cheat tips for GamePigeon with our free word hunt solver. Instant results, no signup needed."
+  path="/"
+  schema={schema}
+>
+  <section id="top" class="mx-auto max-w-6xl px-4 pt-10 pb-6 sm:pt-16">
+    <div class="grid items-center gap-10 lg:grid-cols-2">
+      <div>
+        <h1 class="text-3xl font-extrabold leading-tight text-brand-700 dark:text-white sm:text-4xl">
+          Word Hunt Solver: Solve Any 4x4 Board Instantly
+        </h1>
+        <p class="mt-2 text-sm font-semibold text-accent-600 dark:text-accent-400">
+          No sign-ups and no download required.
+        </p>
+        <p class="mt-4 text-brand-500 dark:text-brand-200">
+          A word hunt solver is a free tool that finds every valid word hidden in a Word Hunt grid the
+          moment you enter your letters. Type in your board, press Solve, and see every playable word
+          ranked by score, all in a few seconds.
+        </p>
+        <p class="mt-3 text-brand-500 dark:text-brand-200">
+          Works for GamePigeon Word Hunt and other grid based word games that use the same
+          connect-the-letters rules.
+        </p>
+        <p class="mt-4 text-xs italic text-brand-400 dark:text-brand-300">Written by admin</p>
+      </div>
+      <div>
+        <WordHuntSolver client:load />
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">How to Use the Word Hunt Solver</h2>
+    <p class="mt-2 text-brand-500 dark:text-brand-200">
+      Fill in your grid and press Solve, the tool returns every valid word in seconds.
+    </p>
+    <div class="mt-6 grid gap-5 sm:grid-cols-2">
+      <div class="card">
+        <h3 class="font-bold text-brand-600 dark:text-white">Enter Your Word Hunt Grid</h3>
+        <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">
+          Fill in each box with the letters shown on your screen, left to right, top to bottom. Use the
+          rows and columns controls to match a 4x4 or 5x5 board.
+        </p>
+      </div>
+      <div class="card">
+        <h3 class="font-bold text-brand-600 dark:text-white">Get Every Valid Word Instantly</h3>
+        <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">
+          Press Solve and the tool returns every word it finds, sorted from longest to shortest, so the
+          highest scoring options show up first.
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">Word Hunt Scoring &amp; Point Values</h2>
+    <p class="mt-2 text-brand-500 dark:text-brand-200">
+      Word Hunt scores by word length only, every letter counts the same, unlike Scrabble where letters
+      like Q are worth more.
+    </p>
+    <div class="mt-6 overflow-hidden rounded-2xl border border-brand-100 dark:border-brand-700">
+      <table class="w-full text-sm">
+        <thead class="bg-brand-50 text-brand-600 dark:bg-brand-800 dark:text-white">
+          <tr>
+            <th class="px-4 py-3 text-left font-semibold">Word Length</th>
+            <th class="px-4 py-3 text-left font-semibold">Points</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-100 dark:divide-brand-700">
+          {[
+            ["3 letters", "100 points"],
+            ["4 letters", "400 points"],
+            ["5 letters", "800 points"],
+            ["6 letters", "1,400 points"],
+            ["7 letters", "1,800 points"],
+            ["8 or more letters", "2,200+ points"],
+          ].map(([len, pts]) => (
+            <tr>
+              <td class="px-4 py-3 text-brand-500 dark:text-brand-200">{len}</td>
+              <td class="px-4 py-3 font-semibold text-brand-700 dark:text-white">{pts}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">Word Hunt Strategy Tips</h2>
+    <p class="mt-2 text-brand-500 dark:text-brand-200">
+      Scan for common prefixes and suffixes first, then build outward from short bases.
+    </p>
+    <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+      {[
+        "Scan for common prefixes like RE, UN and PRE first",
+        "Look for suffixes such as ING, ED and TION",
+        "Start with short three and four letter bases, then build outward",
+        "Recheck the board after each round, since letter paths change every time",
+      ].map((tip) => (
+        <li class="card flex items-start gap-3">
+          <span class="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-accent-500/20 text-xs font-bold text-accent-600 dark:text-accent-400">✓</span>
+          <span class="text-sm text-brand-500 dark:text-brand-200">{tip}</span>
+        </li>
+      ))}
+    </ul>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">Bonus: Find Words From Any Set of Letters</h2>
+    <p class="mt-2 text-brand-500 dark:text-brand-200">
+      Beyond the grid solver, you can also enter a loose set of letters, not tied to a grid, to get a list
+      of playable words. This works well for Scrabble racks or Words With Friends tiles.
+    </p>
+    <h3 class="mt-4 font-bold text-brand-600 dark:text-white">Filter Words by Length or Pattern</h3>
+    <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">
+      Use the starts with, ends with, and length filters to narrow results down to the exact word you need.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">Word Hunt Guides &amp; Tips</h2>
+    <p class="mt-2 text-brand-500 dark:text-brand-200">
+      Browse focused guides for specific word games, each one built to solve a single problem fast.
+    </p>
+    <div class="mt-6 grid gap-5 sm:grid-cols-3">
+      {guides.map((g) => (
+        <a href={g.href} class="card block transition hover:-translate-y-1 hover:shadow-md">
+          <h3 class="font-bold text-brand-600 dark:text-white">{g.title}</h3>
+          <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">{g.desc}</p>
+          <span class="mt-3 inline-block text-sm font-semibold text-accent-600 dark:text-accent-400">Read the guide &rarr;</span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">About This Word Hunt Solver</h2>
+    <p class="mt-2 text-brand-500 dark:text-brand-200">
+      This tool checks your grid against a real dictionary and traces valid paths between adjacent
+      letters, including diagonals. It is built for players who want to practice and improve, not just
+      copy answers.
+    </p>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <h2 class="text-2xl font-bold text-brand-700 dark:text-white">FAQs About Word Hunt Solver</h2>
+    <div class="mt-6 space-y-4">
+      {faqs.map((f) => (
+        <div class="card">
+          <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
+          <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">{f.a}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-6xl px-4 py-10">
+    <div class="card flex flex-col items-center gap-4 bg-brand-500 text-center text-white dark:bg-brand-700">
+      <h2 class="text-2xl font-bold">Bottom Line</h2>
+      <p class="max-w-2xl text-brand-100">
+        Whether you are stuck on today's board or want to get better at Word Hunt long term, this word
+        hunt solver gives you every valid word in seconds, so you can play your best move with confidence.
+      </p>
+      <a href="#top" class="btn-accent">Solve Your Board Now</a>
+    </div>
+  </section>
+</Layout>
