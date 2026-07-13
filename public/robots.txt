@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://www.wordhuntsolvers.com/sitemap-index.xml
