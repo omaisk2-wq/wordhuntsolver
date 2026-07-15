@@ -47,3 +47,10 @@ body {
 .anchor-link {
   @apply font-semibold text-brand-500 underline decoration-accent-500 decoration-2 underline-offset-2 hover:text-brand-600 dark:text-accent-400 dark:hover:text-accent-300;
 }
+
+summary {
+  list-style: none;
+}
+summary::-webkit-details-marker {
+  display: none;
+}

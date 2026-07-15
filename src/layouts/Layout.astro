@@ -49,6 +49,14 @@ const allSchema = [...siteWideSchema, ...pageSchema];
         const dark = stored ? stored === "dark" : prefersDark;
         document.documentElement.classList.toggle("dark", dark);
       })();
+
+      // Always land at the top of the page, including on back/forward navigation.
+      if ("scrollRestoration" in history) {
+        history.scrollRestoration = "manual";
+      }
+      window.addEventListener("pageshow", () => {
+        window.scrollTo(0, 0);
+      });
     </script>
   </head>
   <body class="flex min-h-screen flex-col">

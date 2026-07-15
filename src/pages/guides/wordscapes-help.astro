@@ -42,39 +42,42 @@ const schema = [
     </h1>
     <p class="mt-4 text-xs italic text-brand-400 dark:text-brand-300">Written by admin</p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">How to Use This Wordscapes Help Tool</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">How to Use This Wordscapes Help Tool</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       Wordscapes help means typing the letters shown in your puzzle circle into a solver to get every valid
       word for that level instantly. Enter your letters, press solve, and you will see every word you can
       spell, sorted from longest to shortest.
     </p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">Understanding Wordscapes Bonus Words</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Understanding Wordscapes Bonus Words</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       Bonus words are valid words that do not fit in the crossword-style answer grid, but still earn you
       coins. A word can be real and spellable from your letters yet still count only as a bonus word, not
       a main puzzle answer, this is by game design, not a solver error.
     </p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">More Word Tools On This Site</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">More Word Tools On This Site</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       For a different kind of grid puzzle, try our <a href="/" class="anchor-link">word hunt solver</a>, or read the
       <a href="/guides/word-hunt-cheat" class="anchor-link">word hunt cheat</a> guide. If you just need words from loose letters, the
       <a href="/guides/free-word-finder" class="anchor-link">free word finder</a> works for that too.
     </p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">FAQs About Wordscapes Help</h2>
-    <div class="mt-4 space-y-4">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">FAQs About Wordscapes Help</h2>
+    <div class="mt-4 space-y-3">
       {faqs.map((f) => (
-        <div class="card">
-          <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
-          <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">{f.a}</p>
-        </div>
+        <details class="card group">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-4 h-5 w-5 flex-none text-accent-500 transition-transform group-open:rotate-180"><path d="M6 9l6 6 6-6" /></svg>
+          </summary>
+          <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">{f.a}</p>
+        </details>
       ))}
     </div>
 
     <div class="card mt-10 flex flex-col items-center gap-4 bg-brand-500 text-center text-white dark:bg-brand-700">
-      <h2 class="text-2xl font-bold">Bottom Line</h2>
+      <h2 class="text-2xl font-bold">Get Wordscapes Help Right Now</h2>
       <p class="max-w-xl text-brand-100">
         Wordscapes help should get you unstuck in seconds, not send you searching through ten different
         sites. Enter your letters, get your answer, and get back to your streak.

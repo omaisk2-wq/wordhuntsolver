@@ -94,10 +94,14 @@ export default function BoardEvolver() {
   const [bestWords, setBestWords] = useState<string[]>([]);
   const [history, setHistory] = useState<number[]>([]);
   const [status, setStatus] = useState<"loading" | "ready">("loading");
+  const [evalTimeMs, setEvalTimeMs] = useState<number | null>(null);
 
   const trieRef = useRef<TrieNode | null>(null);
   const popRef = useRef<string[][]>([]);
   const timerRef = useRef<number | null>(null);
+  const bestScoreRef = useRef(0);
+  const generationRef = useRef(0);
+  const GENERATIONS_PER_TICK = 4;
 
   useEffect(() => {
     fetch("/dictionary.txt")
@@ -111,11 +115,14 @@ export default function BoardEvolver() {
 
   function resetPopulation() {
     popRef.current = Array.from({ length: population }, () => randomBoard(size));
+    bestScoreRef.current = 0;
+    generationRef.current = 0;
     setGeneration(0);
     setBestScore(0);
     setBestBoard(randomBoard(size));
     setBestWords([]);
     setHistory([]);
+    setEvalTimeMs(null);
   }
 
   function stepGeneration() {
@@ -126,31 +133,50 @@ export default function BoardEvolver() {
       pop = Array.from({ length: population }, () => randomBoard(size));
     }
 
-    const scored = pop.map((b) => ({ board: b, ...scoreBoard(b, size, trie) }));
-    scored.sort((a, b) => b.score - a.score);
+    let latestBestBoard: string[] | null = null;
+    let latestBestWords: string[] = [];
+    const tickHistory: number[] = [];
+    const evalStart = performance.now();
 
-    if (scored[0].score > bestScore) {
-      setBestScore(scored[0].score);
-      setBestBoard(scored[0].board);
-      setBestWords(scored[0].words);
+    for (let g = 0; g < GENERATIONS_PER_TICK; g++) {
+      const scored = pop.map((b) => ({ board: b, ...scoreBoard(b, size, trie) }));
+      scored.sort((a, b) => b.score - a.score);
+
+      if (scored[0].score > bestScoreRef.current) {
+        bestScoreRef.current = scored[0].score;
+        latestBestBoard = scored[0].board;
+        latestBestWords = scored[0].words;
+      }
+      tickHistory.push(scored[0].score);
+
+      const eliteCount = Math.max(2, Math.floor(population * 0.15));
+      const elites = scored.slice(0, eliteCount).map((s) => s.board);
+      const next: string[][] = [...elites];
+
+      while (next.length < population) {
+        const a = elites[Math.floor(Math.random() * elites.length)];
+        const b = elites[Math.floor(Math.random() * elites.length)];
+        let child = crossover(a, b);
+        const rate = extreme && Math.random() < 0.1 ? mutationRate * 4 : mutationRate;
+        child = mutate(child, rate);
+        next.push(child);
+      }
+
+      pop = next;
+      generationRef.current++;
     }
-    setHistory((h) => [...h.slice(-49), scored[0].score]);
 
-    const eliteCount = Math.max(2, Math.floor(population * 0.15));
-    const elites = scored.slice(0, eliteCount).map((s) => s.board);
-    const next: string[][] = [...elites];
+    const evalMs = performance.now() - evalStart;
+    popRef.current = pop;
 
-    while (next.length < population) {
-      const a = elites[Math.floor(Math.random() * elites.length)];
-      const b = elites[Math.floor(Math.random() * elites.length)];
-      let child = crossover(a, b);
-      const rate = extreme && Math.random() < 0.1 ? mutationRate * 4 : mutationRate;
-      child = mutate(child, rate);
-      next.push(child);
+    setEvalTimeMs(evalMs);
+    setGeneration(generationRef.current);
+    setHistory((h) => [...h, ...tickHistory].slice(-50));
+    if (latestBestBoard) {
+      setBestScore(bestScoreRef.current);
+      setBestBoard(latestBestBoard);
+      setBestWords(latestBestWords);
     }
-
-    popRef.current = next;
-    setGeneration((g) => g + 1);
   }
 
   function start() {
@@ -181,34 +207,34 @@ export default function BoardEvolver() {
           <select
             value={size}
             onChange={(e) => setSize(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 dark:border-brand-700 dark:bg-brand-900"
+            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           >
             <option value={4}>4 x 4</option>
             <option value={5}>5 x 5</option>
           </select>
         </label>
         <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
-          Population Size
+          Population Size (max 500)
           <input
-            type="number" min={10} max={300} value={population}
-            onChange={(e) => setPopulation(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 dark:border-brand-700 dark:bg-brand-900"
+            type="number" min={10} max={500} value={population}
+            onChange={(e) => setPopulation(Math.min(500, Math.max(10, Number(e.target.value) || 10)))}
+            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
         <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
           Mutation Rate
           <input
             type="number" min={0.01} max={0.5} step={0.01} value={mutationRate}
-            onChange={(e) => setMutationRate(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 dark:border-brand-700 dark:bg-brand-900"
+            onChange={(e) => setMutationRate(Math.min(0.5, Math.max(0.01, Number(e.target.value) || 0.01)))}
+            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
         <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
           Interval (ms)
           <input
             type="number" min={30} max={1000} step={10} value={intervalMs}
-            onChange={(e) => setIntervalMs(Number(e.target.value))}
-            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 dark:border-brand-700 dark:bg-brand-900"
+            onChange={(e) => setIntervalMs(Math.min(1000, Math.max(30, Number(e.target.value) || 30)))}
+            className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
       </div>
@@ -218,9 +244,19 @@ export default function BoardEvolver() {
         Extreme Mode (diversity injection)
       </label>
 
+      {running && (
+        <div className="mt-4 flex items-center gap-2 rounded-xl border border-accent-500/40 bg-accent-500/10 px-4 py-2.5 text-sm font-semibold text-accent-600 dark:text-accent-400">
+          <span className="relative flex h-2.5 w-2.5">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-500 opacity-75"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent-500"></span>
+          </span>
+          Evolution running...
+        </div>
+      )}
+
       <p className="mt-2 text-xs text-brand-400 dark:text-brand-300">
-        Running many generations at once can slow or crash underpowered devices. Start with a small
-        population and increase gradually.
+        Population is capped at 500 to prevent the page from freezing. Running many generations at
+        once can still slow underpowered devices, start with a small population and increase gradually.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
@@ -236,17 +272,11 @@ export default function BoardEvolver() {
         <button onClick={reset} className="btn-primary bg-brand-100 text-brand-600 hover:bg-brand-200 dark:bg-brand-700 dark:text-white">
           Reset
         </button>
-        <a
-          href={`/?board=${encodeURIComponent(bestBoard.join(""))}&size=${size}`}
-          className="anchor-link ml-auto self-center"
-        >
-          Open Best Board in Solver
-        </a>
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div>
-          <div className="grid grid-cols-4 gap-3 text-center sm:grid-cols-4">
+          <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-5">
             <div className="card !p-3">
               <p className="text-xs text-brand-400">Generation</p>
               <p className="text-xl font-extrabold text-brand-700 dark:text-white">{generation}</p>
@@ -258,6 +288,12 @@ export default function BoardEvolver() {
             <div className="card !p-3">
               <p className="text-xs text-brand-400">Words Found</p>
               <p className="text-xl font-extrabold text-brand-700 dark:text-white">{bestWords.length}</p>
+            </div>
+            <div className="card !p-3">
+              <p className="text-xs text-brand-400">Eval Time</p>
+              <p className="text-xl font-extrabold text-brand-700 dark:text-white">
+                {evalTimeMs === null ? "—" : `${evalTimeMs.toFixed(0)}ms`}
+              </p>
             </div>
             <div className="card !p-3">
               <p className="text-xs text-brand-400">Status</p>

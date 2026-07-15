@@ -42,53 +42,56 @@ const schema = [
     </h1>
     <p class="mt-4 text-xs italic text-brand-400 dark:text-brand-300">Written by admin</p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">What Is GamePigeon Word Hunt</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">What Is GamePigeon Word Hunt</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       A word hunt cheat is a tool that instantly reveals every valid word hiding in your GamePigeon Word
       Hunt board. Word Hunt itself is a word finding game inside GamePigeon, an iMessage game pack, where
       two players race to find as many valid words as possible on a shared letter grid.
     </p>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       Points are based on word length, so a longer word beats several short ones. That is why a quick
       word hunt cheat can make a real difference when the clock is running.
     </p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">How to Use the Word Hunt Cheat Tool</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">How to Use the Word Hunt Cheat Tool</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       Open the <a href="/" class="anchor-link">word hunt solver</a> on our homepage, type in your board, and press Solve.
     </p>
-    <ul class="mt-4 list-disc space-y-2 pl-5 text-brand-500 dark:text-brand-200">
+    <ul class="mt-4 list-disc space-y-2 pl-5 text-gray-600 dark:text-gray-300 text-sm">
       <li>Enter all sixteen letters from your grid, row by row</li>
       <li>Press Solve to see every valid word instantly</li>
       <li>Sort by length to spot your highest scoring plays first</li>
       <li>Play the longest word you can find before time runs out</li>
     </ul>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">Is Using a Word Hunt Cheat Fair Play</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Is Using a Word Hunt Cheat Fair Play</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       GamePigeon does not officially ban solver tools, and many players use them casually between friends
       for fun rather than serious competition. If you are playing with someone who prefers a no-help match,
       it is worth agreeing on the rules first.
     </p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">More Word Tools On This Site</h2>
-    <p class="mt-3 text-brand-500 dark:text-brand-200">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">More Word Tools On This Site</h2>
+    <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
       If your next game is Scrabble or Words With Friends, try the <a href="/guides/free-word-finder" class="anchor-link">free word finder</a>.
       Stuck on a Wordscapes level instead? Check our <a href="/guides/wordscapes-help" class="anchor-link">wordscapes help</a> guide.
     </p>
 
-    <h2 class="mt-8 text-2xl font-bold text-brand-700 dark:text-white">FAQs About Word Hunt Cheat</h2>
-    <div class="mt-4 space-y-4">
+    <h2 class="mt-8 text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">FAQs About Word Hunt Cheat</h2>
+    <div class="mt-4 space-y-3">
       {faqs.map((f) => (
-        <div class="card">
-          <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
-          <p class="mt-2 text-sm text-brand-500 dark:text-brand-200">{f.a}</p>
-        </div>
+        <details class="card group">
+          <summary class="flex cursor-pointer items-center justify-between">
+            <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-4 h-5 w-5 flex-none text-accent-500 transition-transform group-open:rotate-180"><path d="M6 9l6 6 6-6" /></svg>
+          </summary>
+          <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">{f.a}</p>
+        </details>
       ))}
     </div>
 
     <div class="card mt-10 flex flex-col items-center gap-4 bg-brand-500 text-center text-white dark:bg-brand-700">
-      <h2 class="text-2xl font-bold">Bottom Line</h2>
+      <h2 class="text-2xl font-bold">Get Your Word Hunt Cheat Answers Now</h2>
       <p class="max-w-xl text-brand-100">
         A word hunt cheat is just a faster way to see what your board is hiding. Enter your grid, get every
         valid word, and play the strongest move before your opponent does.
