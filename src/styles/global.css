@@ -3,21 +3,45 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme {
+  /* Structural navy scale (headings, header/footer, dark-mode backgrounds) */
   --color-brand-50: #eef1fb;
   --color-brand-100: #d6ddf3;
   --color-brand-200: #adbbe8;
   --color-brand-300: #7f94d9;
   --color-brand-400: #4f68c4;
-  --color-brand-500: #2b3a67;
-  --color-brand-600: #232f54;
-  --color-brand-700: #1b2542;
+  --color-brand-500: #2f6bff;
+  --color-brand-600: #2557d6;
+  --color-brand-700: #1a2a4a;
   --color-brand-800: #141b31;
   --color-brand-900: #0d1220;
 
-  --color-accent-300: #ffe08a;
-  --color-accent-400: #ffca4d;
-  --color-accent-500: #ffb800;
-  --color-accent-600: #d99900;
+  /* Primary Blue - main CTAs, links, active states */
+  --color-accent-300: #a9cdff;
+  --color-accent-400: #6f9fff;
+  --color-accent-500: #2f6bff;
+  --color-accent-600: #2557d6;
+
+  /* Secondary Light Cyan - lighter highlights */
+  --color-secondary-300: #c5edff;
+  --color-secondary-400: #8adcff;
+  --color-secondary-500: #55c8ff;
+  --color-secondary-600: #2ea8e0;
+
+  /* Status colors */
+  --color-success-bg: #eaf8ee;
+  --color-success: #22c55e;
+  --color-warning-bg: #fff8e6;
+  --color-warning: #f59e0b;
+  --color-error-bg: #fdecec;
+  --color-error: #ef4444;
+
+  /* Overriding Tailwind's default gray scale so every text-gray-* utility
+     across the site automatically matches the requested palette. */
+  --color-gray-900: #1a2a4a;
+  --color-gray-600: #4b5878;
+  --color-gray-300: #b9c3da;
+
+  --color-offwhite: #f7faff;
 }
 
 :root {
@@ -29,7 +53,7 @@
 }
 
 body {
-  @apply bg-white text-brand-900 dark:bg-brand-900 dark:text-white transition-colors duration-200;
+  @apply bg-offwhite text-brand-700 dark:bg-brand-900 dark:text-white transition-colors duration-200;
 }
 
 .card {
@@ -37,15 +61,23 @@ body {
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-xl bg-brand-500 px-5 py-3 font-semibold text-white transition hover:bg-brand-600 focus:outline-none focus:ring-2 focus:ring-accent-500;
+  @apply inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-3 font-semibold text-brand-700 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:border-brand-700 dark:bg-brand-800 dark:text-white dark:hover:bg-brand-700;
 }
 
 .btn-accent {
-  @apply inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 font-semibold text-brand-900 transition hover:bg-accent-400 focus:outline-none focus:ring-2 focus:ring-brand-500;
+  @apply inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 font-semibold text-white transition hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-secondary-500;
 }
 
 .anchor-link {
-  @apply font-semibold text-brand-500 underline decoration-accent-500 decoration-2 underline-offset-2 hover:text-brand-600 dark:text-accent-400 dark:hover:text-accent-300;
+  @apply font-semibold text-accent-500 underline decoration-secondary-500 decoration-2 underline-offset-2 hover:text-accent-600 dark:text-secondary-400 dark:hover:text-secondary-300;
+}
+
+.badge-success {
+  @apply inline-flex items-center gap-2 rounded-xl border border-success/30 bg-success-bg px-4 py-2 text-sm font-semibold text-green-700;
+}
+
+.badge-warning {
+  @apply inline-flex items-center gap-2 rounded-xl border border-warning/30 bg-warning-bg px-4 py-2.5 text-sm font-semibold text-amber-700;
 }
 
 summary {

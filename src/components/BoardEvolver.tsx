@@ -245,16 +245,16 @@ export default function BoardEvolver() {
       </label>
 
       {running && (
-        <div className="mt-4 flex items-center gap-2 rounded-xl border border-accent-500/40 bg-accent-500/10 px-4 py-2.5 text-sm font-semibold text-accent-600 dark:text-accent-400">
+        <div className="badge-warning mt-4">
           <span className="relative flex h-2.5 w-2.5">
-            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent-500 opacity-75"></span>
-            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-accent-500"></span>
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-warning opacity-75"></span>
+            <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-warning"></span>
           </span>
-          Evolution running...
+          Evolving your Word Hunt board...
         </div>
       )}
 
-      <p className="mt-2 text-xs text-brand-400 dark:text-brand-300">
+      <p className="mt-3 rounded-xl border border-warning/30 bg-warning-bg px-4 py-2.5 text-xs text-amber-700">
         Population is capped at 500 to prevent the page from freezing. Running many generations at
         once can still slow underpowered devices, start with a small population and increase gradually.
       </p>
@@ -317,7 +317,7 @@ export default function BoardEvolver() {
             {history.length > 1 && (
               <polyline
                 fill="none"
-                stroke="#FFB800"
+                stroke="#55C8FF"
                 strokeWidth="2"
                 points={history
                   .map((s, i) => {
