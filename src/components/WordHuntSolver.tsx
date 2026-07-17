@@ -187,7 +187,7 @@ export default function WordHuntSolver() {
   return (
     <div className="card">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-sm font-semibold text-brand-500 dark:text-brand-200">
+        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
           <span>Rows</span>
           <div className="flex items-center rounded-lg border border-brand-100 dark:border-brand-700">
             <button onClick={() => changeRows(-1)} className="px-2 py-1 hover:bg-brand-50 dark:hover:bg-brand-700" aria-label="Decrease rows">-</button>
@@ -246,7 +246,7 @@ export default function WordHuntSolver() {
 
       {results && (
         <div className="mt-6 border-t border-brand-100 pt-5 dark:border-brand-700">
-          <p className="mb-3 text-sm font-semibold text-brand-500 dark:text-brand-200">
+          <p className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-200">
             {results.length} word{results.length === 1 ? "" : "s"} found
           </p>
           <div className="flex max-h-56 flex-wrap gap-2 overflow-y-auto">
@@ -258,7 +258,7 @@ export default function WordHuntSolver() {
                 className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
                   activeWord?.word === r.word
                     ? "border-accent-500 bg-accent-500/20 text-brand-700 dark:text-accent-300"
-                    : "border-brand-100 text-brand-500 hover:border-accent-500 dark:border-brand-700 dark:text-brand-200"
+                    : "border-secondary-300 text-secondary-600 hover:border-accent-500 dark:border-secondary-600/40 dark:text-secondary-300"
                 }`}
               >
                 {r.word.toUpperCase()} <span className="text-xs opacity-70">+{pointsFor(r.word.length)}</span>

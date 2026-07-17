@@ -9,8 +9,8 @@
   --color-brand-200: #adbbe8;
   --color-brand-300: #7f94d9;
   --color-brand-400: #4f68c4;
-  --color-brand-500: #2f6bff;
-  --color-brand-600: #2557d6;
+  --color-brand-500: #2b3a67;
+  --color-brand-600: #21304f;
   --color-brand-700: #1a2a4a;
   --color-brand-800: #141b31;
   --color-brand-900: #0d1220;
@@ -53,19 +53,27 @@
 }
 
 body {
-  @apply bg-offwhite text-brand-700 dark:bg-brand-900 dark:text-white transition-colors duration-200;
+  @apply bg-offwhite text-brand-700 dark:bg-brand-900 dark:text-white transition-[background-color] duration-200;
 }
 
 .card {
   @apply rounded-2xl border border-brand-100 dark:border-brand-700 bg-white dark:bg-brand-800 shadow-sm p-6;
 }
 
+.card-cta {
+  @apply rounded-2xl shadow-sm p-6;
+}
+
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-3 font-semibold text-brand-700 transition hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:border-brand-700 dark:bg-brand-800 dark:text-white dark:hover:bg-brand-700;
+  @apply inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-3 font-semibold text-brand-700 transition-[background-color] hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:border-brand-700 dark:bg-brand-800 dark:text-white dark:hover:bg-brand-700;
 }
 
 .btn-accent {
-  @apply inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 font-semibold text-white transition hover:bg-accent-600 focus:outline-none focus:ring-2 focus:ring-secondary-500;
+  @apply inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 font-bold text-gray-900 shadow-md transition-[background-color,transform,box-shadow] hover:scale-[1.02] hover:bg-accent-400 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary-500 dark:text-white;
+}
+
+.btn-cta {
+  @apply inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 font-bold text-accent-600 shadow-md transition-[background-color,transform,box-shadow] hover:scale-[1.02] hover:bg-secondary-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white;
 }
 
 .anchor-link {

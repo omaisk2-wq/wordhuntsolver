@@ -202,7 +202,7 @@ export default function BoardEvolver() {
   return (
     <div className="card">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
+        <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
           Board Size
           <select
             value={size}
@@ -213,7 +213,7 @@ export default function BoardEvolver() {
             <option value={5}>5 x 5</option>
           </select>
         </label>
-        <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
+        <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
           Population Size (max 500)
           <input
             type="number" min={10} max={500} value={population}
@@ -221,7 +221,7 @@ export default function BoardEvolver() {
             className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
-        <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
+        <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
           Mutation Rate
           <input
             type="number" min={0.01} max={0.5} step={0.01} value={mutationRate}
@@ -229,7 +229,7 @@ export default function BoardEvolver() {
             className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
-        <label className="text-sm font-semibold text-brand-500 dark:text-brand-200">
+        <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
           Interval (ms)
           <input
             type="number" min={30} max={1000} step={10} value={intervalMs}
@@ -239,7 +239,7 @@ export default function BoardEvolver() {
         </label>
       </div>
 
-      <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-brand-500 dark:text-brand-200">
+      <label className="mt-4 flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
         <input type="checkbox" checked={extreme} onChange={(e) => setExtreme(e.target.checked)} />
         Extreme Mode (diversity injection)
       </label>
@@ -278,30 +278,30 @@ export default function BoardEvolver() {
         <div>
           <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-5">
             <div className="card !p-3">
-              <p className="text-xs text-brand-400">Generation</p>
+              <p className="text-xs whitespace-nowrap text-brand-400">Generation</p>
               <p className="text-xl font-extrabold text-brand-700 dark:text-white">{generation}</p>
             </div>
             <div className="card !p-3">
-              <p className="text-xs text-brand-400">Best Score</p>
+              <p className="text-xs whitespace-nowrap text-brand-400">Best Score</p>
               <p className="text-xl font-extrabold text-accent-600 dark:text-accent-400">{bestScore}</p>
             </div>
             <div className="card !p-3">
-              <p className="text-xs text-brand-400">Words Found</p>
+              <p className="text-xs whitespace-nowrap text-brand-400">Words Found</p>
               <p className="text-xl font-extrabold text-brand-700 dark:text-white">{bestWords.length}</p>
             </div>
             <div className="card !p-3">
-              <p className="text-xs text-brand-400">Eval Time</p>
+              <p className="text-xs whitespace-nowrap text-brand-400">Eval Time</p>
               <p className="text-xl font-extrabold text-brand-700 dark:text-white">
-                {evalTimeMs === null ? "—" : `${evalTimeMs.toFixed(0)}ms`}
+                {evalTimeMs === null ? "Not yet" : `${evalTimeMs.toFixed(0)}ms`}
               </p>
             </div>
             <div className="card !p-3">
-              <p className="text-xs text-brand-400">Status</p>
+              <p className="text-xs whitespace-nowrap text-brand-400">Status</p>
               <p className="text-xl font-extrabold text-brand-700 dark:text-white">{running ? "Running" : "Idle"}</p>
             </div>
           </div>
 
-          <p className="mt-4 mb-2 text-sm font-semibold text-brand-500 dark:text-brand-200">Best Board</p>
+          <p className="mt-4 mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Best Board</p>
           <div className="grid max-w-xs gap-1.5" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
             {bestBoard.map((l, i) => (
               <div key={i} className="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">
@@ -312,7 +312,7 @@ export default function BoardEvolver() {
         </div>
 
         <div>
-          <p className="mb-2 text-sm font-semibold text-brand-500 dark:text-brand-200">Score Over Generations</p>
+          <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Score Over Generations</p>
           <svg viewBox="0 0 300 100" className="h-24 w-full rounded-lg border border-brand-100 bg-white dark:border-brand-700 dark:bg-brand-900">
             {history.length > 1 && (
               <polyline
@@ -331,11 +331,11 @@ export default function BoardEvolver() {
             )}
           </svg>
 
-          <p className="mt-4 mb-2 text-sm font-semibold text-brand-500 dark:text-brand-200">Words</p>
+          <p className="mt-4 mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Words</p>
           <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
             {bestWords.length === 0 && <p className="text-sm text-brand-400">No words yet, start the evolution.</p>}
             {bestWords.map((w) => (
-              <span key={w} className="rounded-lg border border-brand-100 px-2.5 py-1 text-xs font-semibold text-brand-500 dark:border-brand-700 dark:text-brand-200">
+              <span key={w} className="rounded-lg border border-secondary-300 px-2.5 py-1 text-xs font-semibold text-secondary-600 dark:border-secondary-600/40 dark:text-secondary-300">
                 {w.toUpperCase()}
               </span>
             ))}

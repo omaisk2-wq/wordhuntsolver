@@ -75,21 +75,21 @@ const schema = [
       {faqs.map((f) => (
         <details class="card group">
           <summary class="flex cursor-pointer items-center justify-between">
-            <h3 class="font-bold text-brand-600 dark:text-white">{f.q}</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-4 h-5 w-5 flex-none text-accent-500 transition-transform group-open:rotate-180"><path d="M6 9l6 6 6-6" /></svg>
+            <h3 class="font-bold text-gray-900 dark:text-white">{f.q}</h3>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-4 h-5 w-5 flex-none text-secondary-600 transition-transform group-open:rotate-180"><path d="M6 9l6 6 6-6" /></svg>
           </summary>
           <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">{f.a}</p>
         </details>
       ))}
     </div>
 
-    <div class="card mt-10 flex flex-col items-center gap-4 bg-brand-500 text-center text-white dark:bg-brand-700">
+    <div class="card-cta mt-10 flex flex-col items-center gap-4 bg-accent-500 text-center text-white dark:bg-accent-600">
       <h2 class="text-2xl font-bold">Start Using the Free Word Finder Now</h2>
-      <p class="max-w-xl text-brand-100">
+      <p class="max-w-xl text-white/90">
         A free word finder should not come with hidden limits or a paywall. Type your letters, get your
         words, and get back to your game.
       </p>
-      <a href="/" class="btn-accent">Try the Free Word Finder</a>
+      <a href="/" class="btn-cta">Try the Free Word Finder</a>
     </div>
   </article>
 </Layout>
