@@ -283,7 +283,7 @@ export default function BoardEvolver() {
             </div>
             <div className="card !p-3">
               <p className="text-xs whitespace-nowrap text-brand-400">Best Score</p>
-              <p className="text-xl font-extrabold text-accent-600 dark:text-accent-400">{bestScore}</p>
+              <p className="text-xl font-extrabold text-headline dark:text-headline-dark">{bestScore}</p>
             </div>
             <div className="card !p-3">
               <p className="text-xs whitespace-nowrap text-brand-400">Words Found</p>
@@ -317,7 +317,7 @@ export default function BoardEvolver() {
             {history.length > 1 && (
               <polyline
                 fill="none"
-                stroke="#55C8FF"
+                stroke="#0472AB"
                 strokeWidth="2"
                 points={history
                   .map((s, i) => {

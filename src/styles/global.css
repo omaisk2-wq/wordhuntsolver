@@ -15,17 +15,24 @@
   --color-brand-800: #141b31;
   --color-brand-900: #0d1220;
 
-  /* Primary Blue - main CTAs, links, active states */
-  --color-accent-300: #a9cdff;
-  --color-accent-400: #6f9fff;
-  --color-accent-500: #2f6bff;
-  --color-accent-600: #2557d6;
+  /* Blush pink - cards, buttons, CTA blocks (replaces old dark blue theme) */
+  --color-accent-300: #fef4f4;
+  --color-accent-400: #fce9e9;
+  --color-accent-500: #fadede;
+  --color-accent-600: #f0c2c2;
 
-  /* Secondary Light Cyan - lighter highlights */
+  /* Secondary Light Cyan - kept for minor secondary highlights */
   --color-secondary-300: #c5edff;
   --color-secondary-400: #8adcff;
   --color-secondary-500: #55c8ff;
   --color-secondary-600: #2ea8e0;
+
+  /* Headline blue - H1 headings and icons site-wide */
+  --color-headline: #0472ab;
+  --color-headline-dark: #3fa9d6;
+
+  /* Footer text */
+  --color-footertext: #3e4350;
 
   /* Status colors */
   --color-success-bg: #eaf8ee;
@@ -60,24 +67,29 @@ body {
   @apply rounded-2xl border border-brand-100 dark:border-brand-700 bg-white dark:bg-brand-800 shadow-sm p-6;
 }
 
+/* CTA cards use the blush pink background in both light and dark mode,
+   so text must stay dark navy in both modes for guaranteed visibility. */
 .card-cta {
-  @apply rounded-2xl shadow-sm p-6;
+  @apply rounded-2xl shadow-sm p-6 bg-accent-500 dark:bg-accent-600 text-brand-700;
 }
 
 .btn-primary {
-  @apply inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-3 font-semibold text-brand-700 transition-[background-color] hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-accent-500 dark:border-brand-700 dark:bg-brand-800 dark:text-white dark:hover:bg-brand-700;
+  @apply inline-flex items-center justify-center rounded-xl border border-brand-200 bg-white px-5 py-3 font-semibold text-brand-700 transition-[background-color] hover:bg-brand-50 focus:outline-none focus:ring-2 focus:ring-headline dark:border-brand-700 dark:bg-brand-800 dark:text-white dark:hover:bg-brand-700;
 }
 
+/* Main CTA buttons (Solve, Start, etc). Background stays the same light
+   pink in both modes, so text stays dark navy in both modes too. */
 .btn-accent {
-  @apply inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 font-bold text-gray-900 shadow-md transition-[background-color,transform,box-shadow] hover:scale-[1.02] hover:bg-accent-400 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-secondary-500 dark:text-white;
+  @apply inline-flex items-center justify-center rounded-xl bg-accent-500 px-5 py-3 font-bold text-brand-700 shadow-md transition-[background-color,transform,box-shadow] hover:scale-[1.02] hover:bg-accent-600 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-headline;
 }
 
+/* Button used inside pink CTA cards, needs to contrast against the pink card. */
 .btn-cta {
-  @apply inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 font-bold text-accent-600 shadow-md transition-[background-color,transform,box-shadow] hover:scale-[1.02] hover:bg-secondary-300 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-white;
+  @apply inline-flex items-center justify-center rounded-xl bg-white px-6 py-3 font-bold text-headline shadow-md transition-[background-color,transform,box-shadow] hover:scale-[1.02] hover:bg-brand-50 hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-headline;
 }
 
 .anchor-link {
-  @apply font-semibold text-accent-500 underline decoration-secondary-500 decoration-2 underline-offset-2 hover:text-accent-600 dark:text-secondary-400 dark:hover:text-secondary-300;
+  @apply font-semibold text-headline underline decoration-headline decoration-2 underline-offset-2 hover:opacity-80 dark:text-headline-dark;
 }
 
 .badge-success {
@@ -86,6 +98,10 @@ body {
 
 .badge-warning {
   @apply inline-flex items-center gap-2 rounded-xl border border-warning/30 bg-warning-bg px-4 py-2.5 text-sm font-semibold text-amber-700;
+}
+
+.footer-link {
+  @apply text-footertext hover:text-headline dark:text-brand-200 dark:hover:text-headline-dark transition-colors;
 }
 
 summary {
