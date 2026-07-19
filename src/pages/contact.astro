@@ -17,7 +17,11 @@ import Layout from "../layouts/Layout.astro";
     </p>
 
     <h2 class="mt-8 text-xl font-bold text-center text-gray-900 dark:text-white mb-2">Contact Form</h2>
-    <form class="card mt-4 space-y-4" action="mailto:wordhuntsolvers@gmail.com" method="POST" enctype="text/plain">
+    <form id="contact-form" class="card mt-4 space-y-4">
+      <input type="hidden" name="access_key" value="YOUR_ACCESS_KEY_HERE" />
+      <input type="hidden" name="subject" value="New message from Word Hunt Solver contact form" />
+      <input type="checkbox" name="botcheck" class="hidden" style="display: none;" />
+
       <div>
         <label class="text-gray-600 dark:text-gray-300 text-sm" for="name">Name <span class="text-error">*</span></label>
         <input id="name" name="name" type="text" required class="mt-1 w-full rounded-lg border border-brand-100 bg-white px-3 py-2 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white" />
@@ -30,9 +34,50 @@ import Layout from "../layouts/Layout.astro";
         <label class="text-gray-600 dark:text-gray-300 text-sm" for="message">Message <span class="text-error">*</span></label>
         <textarea id="message" name="message" rows="4" required class="mt-1 w-full rounded-lg border border-brand-100 bg-white px-3 py-2 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"></textarea>
       </div>
-      <button type="submit" class="btn-accent">Send Message</button>
-      <p class="text-xs text-brand-400">This form opens your email app with the message ready to send to wordhuntsolvers@gmail.com. It requires an email app to be set up on your device.</p>
+      <button type="submit" id="contact-submit" class="btn-accent">Send Message</button>
+      <p id="contact-status" class="text-sm" role="status"></p>
     </form>
+
+    <script is:inline>
+      const form = document.getElementById("contact-form");
+      const statusEl = document.getElementById("contact-status");
+      const submitBtn = document.getElementById("contact-submit");
+
+      form.addEventListener("submit", async function (e) {
+        e.preventDefault();
+        submitBtn.disabled = true;
+        submitBtn.textContent = "Sending...";
+        statusEl.textContent = "";
+
+        const formData = new FormData(form);
+        const object = Object.fromEntries(formData);
+        const json = JSON.stringify(object);
+
+        try {
+          const res = await fetch("https://api.web3forms.com/submit", {
+            method: "POST",
+            headers: { "Content-Type": "application/json", Accept: "application/json" },
+            body: json,
+          });
+          const result = await res.json();
+
+          if (result.success) {
+            statusEl.textContent = "Thanks, your message has been sent. We will get back to you soon.";
+            statusEl.className = "text-sm text-green-600 dark:text-green-400";
+            form.reset();
+          } else {
+            statusEl.textContent = "Something went wrong. Please try again or email us directly.";
+            statusEl.className = "text-sm text-error";
+          }
+        } catch (err) {
+          statusEl.textContent = "Something went wrong. Please try again or email us directly.";
+          statusEl.className = "text-sm text-error";
+        }
+
+        submitBtn.disabled = false;
+        submitBtn.textContent = "Send Message";
+      });
+    </script>
 
     <h2 class="mt-8 text-xl font-bold text-center text-gray-900 dark:text-white mb-2">Email Us Directly</h2>
     <p class="mt-3 text-gray-600 dark:text-gray-300 text-sm">
