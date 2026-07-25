@@ -9,60 +9,76 @@ function pointsFor(len: number) {
   return POINTS[len] ?? 0;
 }
 
-type TrieNode = { children: Map<string, TrieNode>; isWord: boolean };
+// Plain-object trie (faster child lookups in V8 than Map for small key sets).
+type TrieNode = { c: Record<string, TrieNode>; w: boolean };
 function buildTrie(words: string[]): TrieNode {
-  const root: TrieNode = { children: new Map(), isWord: false };
-  for (const w of words) {
+  const root: TrieNode = { c: {}, w: false };
+  for (const word of words) {
     let node = root;
-    for (const ch of w) {
-      let next = node.children.get(ch);
+    for (let i = 0; i < word.length; i++) {
+      const ch = word[i];
+      let next = node.c[ch];
       if (!next) {
-        next = { children: new Map(), isWord: false };
-        node.children.set(ch, next);
+        next = { c: {}, w: false };
+        node.c[ch] = next;
       }
       node = next;
     }
-    node.isWord = true;
+    node.w = true;
   }
   return root;
 }
 
-const DIRS = [
+const DIRS: [number, number][] = [
   [-1, -1], [-1, 0], [-1, 1],
   [0, -1],           [0, 1],
   [1, -1],  [1, 0],  [1, 1],
 ];
 
+// Reusable scratch buffers to avoid re-allocating on every board scored,
+// this is the main speed win versus allocating a fresh visited array per call.
+let scratchVisited: Int32Array | null = null;
+let scratchStamp = 0;
+
 function scoreBoard(board: string[], size: number, trie: TrieNode) {
   const rows = size, cols = size;
-  const grid = (r: number, c: number) => board[r * cols + c];
-  const visited = Array.from({ length: rows }, () => Array(cols).fill(false));
+  const cellCount = rows * cols;
+  if (!scratchVisited || scratchVisited.length !== cellCount) {
+    scratchVisited = new Int32Array(cellCount);
+    scratchStamp = 0;
+  }
+  scratchStamp++;
+  const visited = scratchVisited;
+  const stamp = scratchStamp;
   const found = new Set<string>();
+  const letters = board.map((l) => l.toLowerCase());
 
-  function dfs(r: number, c: number, node: TrieNode, word: string) {
-    visited[r][c] = true;
-    if (node.isWord && word.length >= 3) found.add(word);
-    for (const [dr, dc] of DIRS) {
-      const nr = r + dr, nc = c + dc;
-      if (nr < 0 || nr >= rows || nc < 0 || nc >= cols || visited[nr][nc]) continue;
-      const letter = grid(nr, nc).toLowerCase();
-      const next = node.children.get(letter);
+  function dfs(idx: number, node: TrieNode, word: string) {
+    visited[idx] = stamp;
+    if (node.w && word.length >= 3) found.add(word);
+    const r = (idx / cols) | 0;
+    const c = idx % cols;
+    for (let d = 0; d < 8; d++) {
+      const nr = r + DIRS[d][0];
+      const nc = c + DIRS[d][1];
+      if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+      const nIdx = nr * cols + nc;
+      if (visited[nIdx] === stamp) continue;
+      const next = node.c[letters[nIdx]];
       if (!next) continue;
-      dfs(nr, nc, next, word + letter);
+      dfs(nIdx, next, word + letters[nIdx]);
     }
-    visited[r][c] = false;
+    visited[idx] = 0;
   }
 
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const letter = grid(r, c).toLowerCase();
-      const first = trie.children.get(letter);
-      if (!first) continue;
-      dfs(r, c, first, letter);
-    }
+  for (let idx = 0; idx < cellCount; idx++) {
+    const first = trie.c[letters[idx]];
+    if (!first) continue;
+    dfs(idx, first, letters[idx]);
   }
 
-  const score = Array.from(found).reduce((s, w) => s + pointsFor(w.length), 0);
+  let score = 0;
+  found.forEach((w) => (score += pointsFor(w.length)));
   return { score, words: Array.from(found).sort((a, b) => b.length - a.length) };
 }
 
@@ -80,6 +96,8 @@ function crossover(a: string[], b: string[]) {
   return a.slice(0, cut).concat(b.slice(cut));
 }
 
+const MAX_POPULATION = 2000;
+
 export default function BoardEvolver() {
   const [size, setSize] = useState(4);
   const [population, setPopulation] = useState(60);
@@ -95,6 +113,7 @@ export default function BoardEvolver() {
   const [history, setHistory] = useState<number[]>([]);
   const [status, setStatus] = useState<"loading" | "ready">("loading");
   const [evalTimeMs, setEvalTimeMs] = useState<number | null>(null);
+  const [hasRunOnce, setHasRunOnce] = useState(false);
 
   const trieRef = useRef<TrieNode | null>(null);
   const popRef = useRef<string[][]>([]);
@@ -139,13 +158,26 @@ export default function BoardEvolver() {
     const evalStart = performance.now();
 
     for (let g = 0; g < GENERATIONS_PER_TICK; g++) {
-      const scored = pop.map((b) => ({ board: b, ...scoreBoard(b, size, trie) }));
+      let bestOfGen = -1;
+      let bestBoardOfGen: string[] | null = null;
+      let bestWordsOfGen: string[] = [];
+      const scored: { board: string[]; score: number }[] = new Array(pop.length);
+
+      for (let i = 0; i < pop.length; i++) {
+        const r = scoreBoard(pop[i], size, trie);
+        scored[i] = { board: pop[i], score: r.score };
+        if (r.score > bestOfGen) {
+          bestOfGen = r.score;
+          bestBoardOfGen = pop[i];
+          bestWordsOfGen = r.words;
+        }
+      }
       scored.sort((a, b) => b.score - a.score);
 
-      if (scored[0].score > bestScoreRef.current) {
-        bestScoreRef.current = scored[0].score;
-        latestBestBoard = scored[0].board;
-        latestBestWords = scored[0].words;
+      if (bestOfGen > bestScoreRef.current) {
+        bestScoreRef.current = bestOfGen;
+        latestBestBoard = bestBoardOfGen;
+        latestBestWords = bestWordsOfGen;
       }
       tickHistory.push(scored[0].score);
 
@@ -183,6 +215,7 @@ export default function BoardEvolver() {
     if (running || status !== "ready") return;
     if (popRef.current.length === 0) resetPopulation();
     setRunning(true);
+    setHasRunOnce(true);
     timerRef.current = window.setInterval(stepGeneration, intervalMs);
   }
   function stop() {
@@ -192,12 +225,16 @@ export default function BoardEvolver() {
   }
   function reset() {
     stop();
+    setHasRunOnce(false);
     resetPopulation();
   }
   function applyAndReset() {
     stop();
+    setHasRunOnce(false);
     resetPopulation();
   }
+
+  const maxHistory = history.length ? Math.max(...history, 1) : 1;
 
   return (
     <div className="card">
@@ -214,10 +251,10 @@ export default function BoardEvolver() {
           </select>
         </label>
         <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-          Population Size (max 500)
+          Population Size (max {MAX_POPULATION})
           <input
-            type="number" min={10} max={500} value={population}
-            onChange={(e) => setPopulation(Math.min(500, Math.max(10, Number(e.target.value) || 10)))}
+            type="number" min={10} max={MAX_POPULATION} value={population}
+            onChange={(e) => setPopulation(Math.min(MAX_POPULATION, Math.max(10, Number(e.target.value) || 10)))}
             className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
@@ -244,7 +281,7 @@ export default function BoardEvolver() {
         Extreme Mode (diversity injection)
       </label>
 
-      {running && (
+      {running ? (
         <div className="badge-warning mt-4">
           <span className="relative flex h-2.5 w-2.5">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-warning opacity-75"></span>
@@ -252,11 +289,16 @@ export default function BoardEvolver() {
           </span>
           Evolving your Word Hunt board...
         </div>
+      ) : (
+        <div className="badge-success mt-4">
+          <span className="h-2.5 w-2.5 rounded-full bg-success"></span>
+          {hasRunOnce ? "Paused. Press Start to keep evolving this board." : "Ready. Press Start to begin evolving a board."}
+        </div>
       )}
 
       <p className="mt-3 rounded-xl border border-warning/30 bg-warning-bg px-4 py-2.5 text-xs text-amber-700">
-        Population is capped at 500 to prevent the page from freezing. Running many generations at
-        once can still slow underpowered devices, start with a small population and increase gradually.
+        Large populations take more time to evaluate each generation, so higher settings run slower
+        on less powerful devices. Start small and increase gradually to find a comfortable speed.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
@@ -313,17 +355,17 @@ export default function BoardEvolver() {
 
         <div>
           <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Score Over Generations</p>
-          <svg viewBox="0 0 300 100" className="h-24 w-full rounded-lg border border-brand-100 bg-white dark:border-brand-700 dark:bg-brand-900">
+          <svg viewBox="0 0 300 100" preserveAspectRatio="none" className="h-24 w-full rounded-lg border border-brand-100 bg-white dark:border-brand-700 dark:bg-brand-900">
             {history.length > 1 && (
               <polyline
                 fill="none"
                 stroke="#0472AB"
                 strokeWidth="2"
+                vectorEffect="non-scaling-stroke"
                 points={history
                   .map((s, i) => {
-                    const max = Math.max(...history, 1);
                     const x = (i / (history.length - 1)) * 300;
-                    const y = 100 - (s / max) * 90 - 5;
+                    const y = 100 - (s / maxHistory) * 90 - 5;
                     return `${x},${y}`;
                   })
                   .join(" ")}

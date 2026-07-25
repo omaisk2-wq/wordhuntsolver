@@ -50,12 +50,16 @@ const allSchema = [...siteWideSchema, ...pageSchema];
         document.documentElement.classList.toggle("dark", dark);
       })();
 
-      // Always land at the top of the page, including on back/forward navigation.
+      // Always land at the top of the page on a fresh navigation. If the browser
+      // is restoring this tab instantly from its own cache (bfcache), leave it
+      // alone so that fast native restore is not interrupted.
       if ("scrollRestoration" in history) {
         history.scrollRestoration = "manual";
       }
-      window.addEventListener("pageshow", () => {
-        window.scrollTo(0, 0);
+      window.addEventListener("pageshow", (event) => {
+        if (!event.persisted) {
+          window.scrollTo(0, 0);
+        }
       });
     </script>
   </head>
