@@ -1,102 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 
-const LETTER_FREQ =
-  "EEEEEEEEEEEEAAAAAAAAARRRRRRRRIIIIIIIIOOOOOOOOTTTTTTTNNNNNNNSSSSSSLLLLLCCCCUUUUDDDDPPPMMMHHHGGBBFFYYWWKVXZJQ";
-
-const POINTS: Record<number, number> = { 3: 100, 4: 400, 5: 800, 6: 1400, 7: 1800 };
-function pointsFor(len: number) {
-  if (len >= 8) return 2200 + (len - 8) * 400;
-  return POINTS[len] ?? 0;
-}
-
-// Plain-object trie (faster child lookups in V8 than Map for small key sets).
-type TrieNode = { c: Record<string, TrieNode>; w: boolean };
-function buildTrie(words: string[]): TrieNode {
-  const root: TrieNode = { c: {}, w: false };
-  for (const word of words) {
-    let node = root;
-    for (let i = 0; i < word.length; i++) {
-      const ch = word[i];
-      let next = node.c[ch];
-      if (!next) {
-        next = { c: {}, w: false };
-        node.c[ch] = next;
-      }
-      node = next;
-    }
-    node.w = true;
-  }
-  return root;
-}
-
-const DIRS: [number, number][] = [
-  [-1, -1], [-1, 0], [-1, 1],
-  [0, -1],           [0, 1],
-  [1, -1],  [1, 0],  [1, 1],
-];
-
-// Reusable scratch buffers to avoid re-allocating on every board scored,
-// this is the main speed win versus allocating a fresh visited array per call.
-let scratchVisited: Int32Array | null = null;
-let scratchStamp = 0;
-
-function scoreBoard(board: string[], size: number, trie: TrieNode) {
-  const rows = size, cols = size;
-  const cellCount = rows * cols;
-  if (!scratchVisited || scratchVisited.length !== cellCount) {
-    scratchVisited = new Int32Array(cellCount);
-    scratchStamp = 0;
-  }
-  scratchStamp++;
-  const visited = scratchVisited;
-  const stamp = scratchStamp;
-  const found = new Set<string>();
-  const letters = board.map((l) => l.toLowerCase());
-
-  function dfs(idx: number, node: TrieNode, word: string) {
-    visited[idx] = stamp;
-    if (node.w && word.length >= 3) found.add(word);
-    const r = (idx / cols) | 0;
-    const c = idx % cols;
-    for (let d = 0; d < 8; d++) {
-      const nr = r + DIRS[d][0];
-      const nc = c + DIRS[d][1];
-      if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
-      const nIdx = nr * cols + nc;
-      if (visited[nIdx] === stamp) continue;
-      const next = node.c[letters[nIdx]];
-      if (!next) continue;
-      dfs(nIdx, next, word + letters[nIdx]);
-    }
-    visited[idx] = 0;
-  }
-
-  for (let idx = 0; idx < cellCount; idx++) {
-    const first = trie.c[letters[idx]];
-    if (!first) continue;
-    dfs(idx, first, letters[idx]);
-  }
-
-  let score = 0;
-  found.forEach((w) => (score += pointsFor(w.length)));
-  return { score, words: Array.from(found).sort((a, b) => b.length - a.length) };
-}
-
-function randomLetter() {
-  return LETTER_FREQ[Math.floor(Math.random() * LETTER_FREQ.length)];
-}
 function randomBoard(size: number) {
-  return Array.from({ length: size * size }, randomLetter);
+  const LETTER_FREQ =
+    "EEEEEEEEEEEEAAAAAAAAARRRRRRRRIIIIIIIIOOOOOOOOTTTTTTTNNNNNNNSSSSSSLLLLLCCCCUUUUDDDDPPPMMMHHHGGBBFFYYWWKVXZJQ";
+  return Array.from(
+    { length: size * size },
+    () => LETTER_FREQ[Math.floor(Math.random() * LETTER_FREQ.length)]
+  );
 }
-function mutate(board: string[], rate: number) {
-  return board.map((l) => (Math.random() < rate ? randomLetter() : l));
-}
-function crossover(a: string[], b: string[]) {
-  const cut = Math.floor(Math.random() * a.length);
-  return a.slice(0, cut).concat(b.slice(cut));
-}
-
-const MAX_POPULATION = 2000;
 
 export default function BoardEvolver() {
   const [size, setSize] = useState(4);
@@ -114,124 +25,108 @@ export default function BoardEvolver() {
   const [status, setStatus] = useState<"loading" | "ready">("loading");
   const [evalTimeMs, setEvalTimeMs] = useState<number | null>(null);
   const [hasRunOnce, setHasRunOnce] = useState(false);
+  const [boardMode, setBoardMode] = useState<"best" | "manual">("best");
+  const [manualBoard, setManualBoard] = useState<string[]>(() => Array(16).fill(""));
 
-  const trieRef = useRef<TrieNode | null>(null);
-  const popRef = useRef<string[][]>([]);
-  const timerRef = useRef<number | null>(null);
-  const bestScoreRef = useRef(0);
-  const generationRef = useRef(0);
-  const GENERATIONS_PER_TICK = 4;
+  function setManualCell(i: number, val: string) {
+    const letter = val.replace(/[^a-zA-Z]/g, "").slice(-1).toUpperCase();
+    setManualBoard((old) => {
+      const next = old.slice();
+      next[i] = letter;
+      return next;
+    });
+  }
+
+  const workerRef = useRef<Worker | null>(null);
 
   useEffect(() => {
+    const worker = new Worker(new URL("../workers/evolver.worker.ts", import.meta.url), {
+      type: "module",
+    });
+    workerRef.current = worker;
+
+    worker.onmessage = (e) => {
+      const msg = e.data;
+      if (msg.type === "ready") {
+        setStatus("ready");
+      } else if (msg.type === "reset") {
+        setGeneration(0);
+        setBestScore(0);
+        setBestWords([]);
+        setHistory([]);
+        setEvalTimeMs(null);
+      } else if (msg.type === "tick") {
+        setGeneration(msg.generation);
+        setBestScore(msg.bestScore);
+        setEvalTimeMs(msg.evalMs);
+        setHistory((h) => [...h, ...msg.tickHistory].slice(-50));
+        if (msg.bestBoard) {
+          setBestBoard(msg.bestBoard);
+          setBestWords(msg.bestWords);
+        }
+      }
+    };
+
     fetch("/dictionary.txt")
       .then((r) => r.text())
       .then((text) => {
-        trieRef.current = buildTrie(text.split("\n"));
-        setStatus("ready");
+        worker.postMessage({ type: "loadDictionary", words: text.split("\n") });
       });
-    return () => stop();
+
+    return () => worker.terminate();
   }, []);
 
-  function resetPopulation() {
-    popRef.current = Array.from({ length: population }, () => randomBoard(size));
-    bestScoreRef.current = 0;
-    generationRef.current = 0;
-    setGeneration(0);
-    setBestScore(0);
+  useEffect(() => {
+    setManualBoard((old) => {
+      const cellCount = size * size;
+      const next = Array(cellCount).fill("");
+      for (let i = 0; i < Math.min(old.length, cellCount); i++) next[i] = old[i];
+      return next;
+    });
+    // Best Board must always match the current grid size, otherwise the
+    // display grid and the array length mismatch and the board renders broken.
     setBestBoard(randomBoard(size));
+    setBestScore(0);
     setBestWords([]);
     setHistory([]);
     setEvalTimeMs(null);
-  }
+    setGeneration(0);
+    setHasRunOnce(false);
+    setRunning(false);
+    workerRef.current?.postMessage({ type: "stop" });
+  }, [size]);
 
-  function stepGeneration() {
-    const trie = trieRef.current;
-    if (!trie) return;
-    let pop = popRef.current;
-    if (pop.length === 0 || pop[0].length !== size * size) {
-      pop = Array.from({ length: population }, () => randomBoard(size));
-    }
-
-    let latestBestBoard: string[] | null = null;
-    let latestBestWords: string[] = [];
-    const tickHistory: number[] = [];
-    const evalStart = performance.now();
-
-    for (let g = 0; g < GENERATIONS_PER_TICK; g++) {
-      let bestOfGen = -1;
-      let bestBoardOfGen: string[] | null = null;
-      let bestWordsOfGen: string[] = [];
-      const scored: { board: string[]; score: number }[] = new Array(pop.length);
-
-      for (let i = 0; i < pop.length; i++) {
-        const r = scoreBoard(pop[i], size, trie);
-        scored[i] = { board: pop[i], score: r.score };
-        if (r.score > bestOfGen) {
-          bestOfGen = r.score;
-          bestBoardOfGen = pop[i];
-          bestWordsOfGen = r.words;
-        }
-      }
-      scored.sort((a, b) => b.score - a.score);
-
-      if (bestOfGen > bestScoreRef.current) {
-        bestScoreRef.current = bestOfGen;
-        latestBestBoard = bestBoardOfGen;
-        latestBestWords = bestWordsOfGen;
-      }
-      tickHistory.push(scored[0].score);
-
-      const eliteCount = Math.max(2, Math.floor(population * 0.15));
-      const elites = scored.slice(0, eliteCount).map((s) => s.board);
-      const next: string[][] = [...elites];
-
-      while (next.length < population) {
-        const a = elites[Math.floor(Math.random() * elites.length)];
-        const b = elites[Math.floor(Math.random() * elites.length)];
-        let child = crossover(a, b);
-        const rate = extreme && Math.random() < 0.1 ? mutationRate * 4 : mutationRate;
-        child = mutate(child, rate);
-        next.push(child);
-      }
-
-      pop = next;
-      generationRef.current++;
-    }
-
-    const evalMs = performance.now() - evalStart;
-    popRef.current = pop;
-
-    setEvalTimeMs(evalMs);
-    setGeneration(generationRef.current);
-    setHistory((h) => [...h, ...tickHistory].slice(-50));
-    if (latestBestBoard) {
-      setBestScore(bestScoreRef.current);
-      setBestBoard(latestBestBoard);
-      setBestWords(latestBestWords);
-    }
+  function sendConfig() {
+    workerRef.current?.postMessage({
+      type: "configure",
+      size,
+      population,
+      mutationRate,
+      intervalMs,
+      extreme,
+    });
   }
 
   function start() {
     if (running || status !== "ready") return;
-    if (popRef.current.length === 0) resetPopulation();
+    sendConfig();
     setRunning(true);
     setHasRunOnce(true);
-    timerRef.current = window.setInterval(stepGeneration, intervalMs);
+    workerRef.current?.postMessage({ type: "start" });
   }
   function stop() {
     setRunning(false);
-    if (timerRef.current) window.clearInterval(timerRef.current);
-    timerRef.current = null;
+    workerRef.current?.postMessage({ type: "stop" });
   }
   function reset() {
     stop();
     setHasRunOnce(false);
-    resetPopulation();
+    setBestBoard(randomBoard(size));
+    sendConfig();
+    workerRef.current?.postMessage({ type: "resetPopulation" });
   }
   function applyAndReset() {
-    stop();
-    setHasRunOnce(false);
-    resetPopulation();
+    reset();
   }
 
   const maxHistory = history.length ? Math.max(...history, 1) : 1;
@@ -251,10 +146,10 @@ export default function BoardEvolver() {
           </select>
         </label>
         <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-          Population Size (max {MAX_POPULATION})
+          Population Size
           <input
-            type="number" min={10} max={MAX_POPULATION} value={population}
-            onChange={(e) => setPopulation(Math.min(MAX_POPULATION, Math.max(10, Number(e.target.value) || 10)))}
+            type="number" min={10} value={population}
+            onChange={(e) => setPopulation(Math.max(10, Number(e.target.value) || 10))}
             className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-brand-900 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
           />
         </label>
@@ -297,8 +192,9 @@ export default function BoardEvolver() {
       )}
 
       <p className="mt-3 rounded-xl border border-warning/30 bg-warning-bg px-4 py-2.5 text-xs text-amber-700">
-        Large populations take more time to evaluate each generation, so higher settings run slower
-        on less powerful devices. Start small and increase gradually to find a comfortable speed.
+        This runs in a background thread so the page will not freeze, but very large populations still
+        take real time and memory to evaluate each generation and can slow down or crash weaker devices.
+        Start with a small population and increase it gradually.
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
@@ -319,38 +215,77 @@ export default function BoardEvolver() {
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <div>
           <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-5">
-            <div className="card !p-3">
+            <div className="card !p-4">
               <p className="text-xs whitespace-nowrap text-brand-400">Generation</p>
-              <p className="text-xl font-extrabold text-brand-700 dark:text-white">{generation}</p>
+              <p className="text-xl font-extrabold whitespace-nowrap text-brand-700 dark:text-white">{generation}</p>
             </div>
-            <div className="card !p-3">
+            <div className="card !p-4">
               <p className="text-xs whitespace-nowrap text-brand-400">Best Score</p>
-              <p className="text-xl font-extrabold text-headline dark:text-headline-dark">{bestScore}</p>
+              <p className="text-xl font-extrabold whitespace-nowrap text-headline dark:text-headline-dark">{bestScore}</p>
             </div>
-            <div className="card !p-3">
+            <div className="card !p-4">
               <p className="text-xs whitespace-nowrap text-brand-400">Words Found</p>
-              <p className="text-xl font-extrabold text-brand-700 dark:text-white">{bestWords.length}</p>
+              <p className="text-xl font-extrabold whitespace-nowrap text-brand-700 dark:text-white">{bestWords.length}</p>
             </div>
-            <div className="card !p-3">
+            <div className="card !p-4">
               <p className="text-xs whitespace-nowrap text-brand-400">Eval Time</p>
-              <p className="text-xl font-extrabold text-brand-700 dark:text-white">
+              <p className="text-lg font-extrabold whitespace-nowrap text-brand-700 dark:text-white">
                 {evalTimeMs === null ? "Not yet" : `${evalTimeMs.toFixed(0)}ms`}
               </p>
             </div>
-            <div className="card !p-3">
+            <div className="card !p-4">
               <p className="text-xs whitespace-nowrap text-brand-400">Status</p>
-              <p className="text-xl font-extrabold text-brand-700 dark:text-white">{running ? "Running" : "Idle"}</p>
+              <p className="text-lg font-extrabold whitespace-nowrap text-brand-700 dark:text-white">{running ? "Running" : "Idle"}</p>
             </div>
           </div>
 
-          <p className="mt-4 mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Best Board</p>
-          <div className="grid max-w-xs gap-1.5" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
-            {bestBoard.map((l, i) => (
-              <div key={i} className="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">
-                {l}
-              </div>
-            ))}
+          <div className="mt-4 flex items-center justify-between">
+            <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+              {boardMode === "best" ? "Best Board" : "Fill Your Own Board"}
+            </p>
+            <div className="flex overflow-hidden rounded-lg border border-brand-100 text-xs font-semibold dark:border-brand-700">
+              <button
+                onClick={() => setBoardMode("best")}
+                className={`px-3 py-1.5 ${boardMode === "best" ? "bg-headline text-white" : "bg-white text-gray-900 dark:bg-brand-900 dark:text-white"}`}
+              >
+                Best Board
+              </button>
+              <button
+                onClick={() => setBoardMode("manual")}
+                className={`px-3 py-1.5 ${boardMode === "manual" ? "bg-headline text-white" : "bg-white text-gray-900 dark:bg-brand-900 dark:text-white"}`}
+              >
+                Fill My Own
+              </button>
+            </div>
           </div>
+
+          {boardMode === "best" ? (
+            <div className="mt-2 grid max-w-xs gap-1.5" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
+              {bestBoard.map((l, i) => (
+                <div key={i} className="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">
+                  {l}
+                </div>
+              ))}
+            </div>
+          ) : (
+            <>
+              <p className="mt-1 text-xs text-brand-400">Type your own letters to build a board by hand.</p>
+              <div className="mt-2 grid max-w-xs gap-1.5" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
+                {manualBoard.map((l, i) => (
+                  <input
+                    key={i}
+                    value={l}
+                    onChange={(e) => setManualCell(i, e.target.value)}
+                    maxLength={1}
+                    inputMode="text"
+                    autoComplete="off"
+                    aria-label={`Manual board letter ${i + 1}`}
+                    className="aspect-square w-full rounded-lg border-2 border-brand-100 bg-white text-center text-lg font-bold uppercase text-brand-700 outline-none focus:border-headline dark:border-brand-700 dark:bg-brand-900 dark:text-white"
+                  />
+                ))}
+              </div>
+            </>
+          )}
         </div>
 
         <div>
