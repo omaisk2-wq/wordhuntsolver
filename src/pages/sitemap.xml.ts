@@ -1,7 +1,7 @@
 const SITE = "https://www.wordhuntsolvers.com";
 
 const pages = [
-  { path: "/", priority: "1.0" },
+  { path: "", priority: "1.0" },
   { path: "/evolver", priority: "0.8" },
   { path: "/guides", priority: "0.8" },
   { path: "/guides/word-hunt-cheat", priority: "0.7" },
