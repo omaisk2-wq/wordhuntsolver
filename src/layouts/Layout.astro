@@ -43,10 +43,12 @@ const allSchema = [...siteWideSchema, ...pageSchema];
     <Seo title={title} description={description} path={path} ogImage={ogImage} schema={allSchema} noindex={noindex} />
     <script is:inline>
       // Runs before paint to avoid a flash of the wrong theme.
+      // Light mode is the default for every new visitor, regardless of their
+      // system preference. Dark mode only turns on if the visitor picks it
+      // themselves using the toggle, and that choice is remembered.
       (function () {
         const stored = localStorage.getItem("theme");
-        const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-        const dark = stored ? stored === "dark" : prefersDark;
+        const dark = stored === "dark";
         document.documentElement.classList.toggle("dark", dark);
       })();
 
