@@ -1,5 +1,7 @@
 RewriteEngine On
 
+RewriteRule ^guides/?$ guides.html [L]
+
 # 1. Force https AND www together.
 # Catches: http://wordhuntsolvers.com, https://wordhuntsolvers.com, http://www.wordhuntsolvers.com
 RewriteCond %{HTTPS} off [OR]
