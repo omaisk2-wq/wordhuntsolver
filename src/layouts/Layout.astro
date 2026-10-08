@@ -101,7 +101,15 @@ const allSchema = [...siteWideSchema, ...pageSchema];
     </script>
 
     <!-- ============================================================
-         GOOGLE ANALYTICS (GA4): paste your GA4 tag right here,
+         GOOGLE ANALYTICS (GA4): <!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-3JKZ8ML24M"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-3JKZ8ML24M');
+</script>,
          AFTER the consent code above, so consent applies first.
          ============================================================ -->
 
