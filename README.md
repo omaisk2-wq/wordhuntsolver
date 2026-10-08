@@ -1,8 +1,7 @@
-# Word Hunt Solver — wordhuntsolvers.com
+# Word Hunt Solver (wordhuntsolvers.com)
 
-Built with **Astro + React islands + Tailwind CSS v4**. Every page ships as pure static HTML
-(zero JavaScript by default) except the Solver and Evolver tools, which hydrate as isolated
-React islands.
+Built with Astro, React islands, and Tailwind CSS v4. Every page ships as static HTML.
+The Solver and Board Evolver are small React islands. Hosting: Hostinger.
 
 ## Local development
 ```bash
@@ -10,43 +9,35 @@ npm install
 npm run dev
 ```
 
-## Build for production
+## Build and deploy
 ```bash
 npm run build
 ```
-Output goes to `dist/` — upload this entire folder to Hostinger's `public_html`.
+Output goes to `dist/`. Pushing to `main` runs `.github/workflows/build-and-deploy.yml`,
+which builds the site and uploads `dist/` to Hostinger over FTPS (when `DEPLOY_ENABLED` is `true`).
+`public/.htaccess` is copied into `dist/` automatically. It handles https and www, clean URLs,
+the 301 redirect from `/guides/free-word-finder`, the custom 404 page, compression, and caching.
 
-## Deploying to Hostinger
-1. Run `npm run build`
-2. Upload the contents of `dist/` to your Hostinger `public_html` folder
-3. Point wordhuntsolvers.com (your domain) at that hosting account
-4. Submit `https://www.wordhuntsolvers.com/sitemap-index.xml` in Google Search Console
+## Pages
+- `/` Homepage with the solver, video, table of contents, and FAQ
+- `/evolver` Board Evolver
+- `/guides` Guides hub
+- `/guides/word-hunt-tips`, `/guides/word-hunt-cheat`, `/guides/word-hunt-solver-vs-word-finder`
+- `/about`, `/contact`, `/privacy-policy`, `/terms-and-conditions`
+- `404.html` custom not found page (noindex)
+- `/sitemap.xml` (submit this in Search Console) and `robots.txt`
 
-## What's included
-- `/` — Homepage with the Word Hunt Solver tool, guides section, FAQs, schema
-- `/evolver` — Board Evolver tool (genetic algorithm)
-- `/guides` — Guides hub page
-- `/guides/word-hunt-cheat`, `/guides/free-word-finder`, `/guides/wordscapes-help` — 3 articles
-- `/privacy-policy`, `/terms-and-conditions`, `/contact` — legal/support pages
-- `robots.txt` and an auto-generated `sitemap-index.xml`
-- Dark/light mode toggle
-- FAQPage, BreadcrumbList, Organization, WebSite JSON-LD schema
-- `public/dictionary.txt` — ENABLE1 word list (152k words), the same style of dictionary
-  used by Scrabble-type games, filtered to 3-12 letter words
-- `public/og/default.png` — brand OG image used on homepage, legal, and support pages
+## Things the owner adds
+1. Web3Forms access key: in `src/pages/contact.astro`, replace `YOUR_ACCESS_KEY_HERE`.
+2. Google Analytics: paste the GA4 tag in `src/layouts/Layout.astro` at the marked spot,
+   after the consent code. Do not move it above the consent code.
+3. When a page's content changes, update its date in `src/pages/sitemap.xml.ts`, and for guides,
+   the "Updated" date and `dateModified` on that page.
 
-## Still needed before going fully live
-   real Measurement ID, and uncomment it.
-2. Contact form backend: the form on /contact is not wired to send anywhere yet, connect it to a
-   service like Formspree or Resend. Until then, the direct email (wordhuntsolver@gmail.com) works.
-3. Article feature images: each article currently falls back to the default OG image. Once you
-   have a feature image per article, pass it via the ogImage prop on that page's Layout.
-4. 7 remaining articles: only 3 of the planned 10 are built. Add the rest under src/pages/guides/,
-   following the existing file pattern.
-5. Ad network (if any): the Privacy Policy has one bracketed line reserved for this.
-
-## SEO/technical notes
-- 100% static HTML, verified in the raw build output
-- Organization + WebSite schema site-wide, FAQPage + BreadcrumbList on articles
-- Canonical tags, Open Graph, Twitter cards on every page
-- No fabricated claims anywhere
+## Notes
+- Word list: `public/dictionary.txt`, the full ENABLE word list (every word of 3 letters or more).
+- Scoring above 8 letters is not confirmed, so 9+ letter words show as 2,200+.
+- Screenshot upload runs fully in the browser (`src/lib/boardScan.ts`, `src/lib/scanUpload.ts`).
+  Accepted formats: PNG, JPG, WebP. Nothing is uploaded to a server.
+- Cookie banner shows for visitors with a European time zone. Google Consent Mode keeps
+  Analytics off by default for the UK, EEA, and Switzerland until they accept.
