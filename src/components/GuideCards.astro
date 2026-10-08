@@ -1,0 +1,44 @@
+---
+import { GUIDES } from "../data/site";
+
+interface Props {
+  exclude?: string;
+  headingTag?: "h2" | "h3" | "p";
+  eager?: boolean;
+}
+const { exclude, headingTag = "h3" } = Astro.props;
+const items = GUIDES.filter((g) => g.href !== exclude);
+const Tag = headingTag;
+const cols = items.length >= 3 ? "sm:grid-cols-2 lg:grid-cols-3" : "sm:grid-cols-2";
+---
+
+<div class={`grid gap-5 ${cols}`}>
+  {
+    items.map((g) => (
+      <a href={g.href} class="card-link group">
+        <div class="aspect-[16/9] overflow-hidden border-b border-brand-100 bg-brand-50 dark:border-brand-700 dark:bg-brand-900">
+          <img
+            src={g.image}
+            alt={g.imageAlt}
+            width={g.width}
+            height={g.height}
+            loading="lazy"
+            decoding="async"
+            class="h-full w-full object-cover transition-transform duration-300 group-hover:scale-[1.03]"
+          />
+        </div>
+        <div class="flex flex-1 flex-col p-5">
+          <span class="card-kicker">{g.kicker}</span>
+          <Tag class="mt-1.5 text-lg font-bold leading-snug text-gray-900 group-hover:text-headline dark:text-white dark:group-hover:text-headline-dark">
+            {g.title}
+          </Tag>
+          <p class="mt-2 text-[0.9375rem] leading-relaxed text-gray-600 dark:text-gray-300">{g.description}</p>
+          <span class="read-more">
+            Read the guide
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-4 w-4 transition-transform group-hover:translate-x-0.5"><path d="M5 12h14M12 5l7 7-7 7" /></svg>
+          </span>
+        </div>
+      </a>
+    ))
+  }
+</div>

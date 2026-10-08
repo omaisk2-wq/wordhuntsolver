@@ -1,0 +1,16 @@
+---
+import GuideCards from "./GuideCards.astro";
+import ToolCards from "./ToolCards.astro";
+
+interface Props {
+  current: string;
+}
+const { current } = Astro.props;
+---
+
+<aside class="mt-10 border-t border-brand-100 pt-8 dark:border-brand-700" aria-label="Related guides and tools">
+  <p class="text-2xl font-extrabold tracking-tight text-gray-900 dark:text-white">Keep Reading</p>
+  <p class="mt-1 text-gray-600 dark:text-gray-300">More guides and free tools for Word Hunt players.</p>
+  <div class="mt-5"><GuideCards exclude={current} headingTag="p" /></div>
+  <div class="mt-5"><ToolCards headingTag="p" /></div>
+</aside>

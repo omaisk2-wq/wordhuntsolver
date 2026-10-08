@@ -1,0 +1,18 @@
+---
+interface Props {
+  title?: string;
+  text?: string;
+}
+const {
+  title = "Stuck on a Board?",
+  text = "Type or upload your Word Hunt board and see every word, its points, and the exact path to swipe.",
+} = Astro.props;
+---
+
+<div class="card-cta flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+  <div>
+    <p class="text-xl font-extrabold tracking-tight">{title}</p>
+    <p class="mt-1 text-brand-700/90">{text}</p>
+  </div>
+  <a href="/" class="btn-cta flex-none">Try the Solver</a>
+</div>
