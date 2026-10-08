@@ -6,7 +6,8 @@ const LETTER_FREQ =
 
 const POINTS: Record<number, number> = { 3: 100, 4: 400, 5: 800, 6: 1400, 7: 1800 };
 function pointsFor(len: number) {
-  if (len >= 8) return 2200 + (len - 8) * 400;
+  // Scoring above 8 letters is not confirmed, so 9+ letter words count as 2,200 (a minimum).
+  if (len >= 8) return 2200;
   return POINTS[len] ?? 0;
 }
 

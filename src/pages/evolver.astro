@@ -1,59 +1,172 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import BoardEvolver from "../components/BoardEvolver.tsx";
+const schema = [
+ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "Word Hunt Board Evolver",
+  "url": "https://www.wordhuntsolvers.com/evolver",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "isAccessibleForFree": true,
+  "offers": {
+   "@type": "Offer",
+   "price": "0",
+   "priceCurrency": "USD"
+  },
+  "description": "Builds high scoring Word Hunt practice boards with a genetic algorithm that runs in your browser.",
+  "publisher": {
+   "@id": "https://www.wordhuntsolvers.com/#organization"
+  }
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+   {
+    "@type": "Question",
+    "name": "Why does my Score stop going up?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "The boards have reached a plateau, where small changes no longer help. Turn on Extreme Mode, raise the mutation rate a little, or press Reset to start over with new boards."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Does a bigger Population give a better Board?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "It can, because more boards are tested each generation. But each generation also takes longer, so a bigger population isn't always faster at finding a high score."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Why is it slow on my Phone?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Scoring many boards takes a lot of work. Lower the population size or raise the interval to make it lighter."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Does it use the same Word List as the Solver?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. Both use the ENABLE word list, with every word of 3 letters or more."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Is the Board Evolver free?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. It's free, with no account or download."
+    }
+   }
+  ]
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "BreadcrumbList",
+  "itemListElement": [
+   {
+    "@type": "ListItem",
+    "position": 1,
+    "name": "Home",
+    "item": "https://www.wordhuntsolvers.com/"
+   },
+   {
+    "@type": "ListItem",
+    "position": 2,
+    "name": "Board Evolver",
+    "item": "https://www.wordhuntsolvers.com/evolver"
+   }
+  ]
+ }
+];
 ---
 
 <Layout
-  title="Board Evolver: Generate a High Scoring Word Hunt Board"
-  description="Use a genetic algorithm to evolve a high scoring Word Hunt board from scratch, then open it straight in the solver to practice."
+  title="Word Hunt Board Evolver: Build High Scoring Practice Boards"
+  description="Grow high scoring Word Hunt practice boards with a free genetic algorithm tool. See how it works and how to train with the boards it builds."
   path="/evolver"
-  ogImage="/images/word-hunt-solver-logo.webp"
+  schema={schema}
 >
-  <section class="mx-auto max-w-3xl px-4 pt-10 pb-6 text-center sm:pt-16">
-    <h1 class="text-3xl font-extrabold leading-tight text-headline dark:text-headline-dark sm:text-4xl">
-      Board Evolver
-    </h1>
-    <p class="mt-3 text-center text-gray-600 dark:text-gray-300 text-sm">
-      The board evolver uses a genetic algorithm to evolve a high scoring Word Hunt board from scratch.
-      Each generation keeps the best scoring boards and mixes them together, so the score climbs over time.
-    </p>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-6">
-    <BoardEvolver client:load />
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">How the Board Evolver Works</h2>
-    <p class="mt-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-      A genetic algorithm starts with a batch of random boards, scores each one using the same solving
-      engine as the main solver, then keeps the highest scoring boards and combines them to create the
-      next generation. Repeating this over many generations gradually produces boards packed with valid
-      words.
-    </p>
-    <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-      {[
-        "Population Size: how many boards are tested per generation, higher is slower but more thorough",
-        "Mutation Rate: how often a random letter is swapped in, keeps the search from getting stuck",
-        "Interval: how many milliseconds between generations while running",
-        "Extreme Mode: occasionally applies a bigger mutation to boost diversity and avoid plateaus",
-      ].map((tip) => (
-        <li class="card flex items-start gap-3">
-          <span class="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-headline/10 text-xs font-bold text-headline dark:text-headline-dark">✓</span>
-          <span class="text-gray-600 dark:text-gray-300 text-sm">{tip}</span>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <div class="card-cta flex flex-col items-center gap-4 text-center">
-      <h2 class="text-2xl font-bold">Start Evolving Your Word Hunt Board</h2>
-      <p class="max-w-2xl text-brand-600">
-        Want to practice on tougher boards instead of easy ones? Evolve a high scoring board here, then
-        send it straight to the solver to study every word it holds.
-      </p>
-      <a href="/" class="btn-cta">Try the Word Hunt Solver</a>
-    </div>
-  </section>
+  <article class="mx-auto max-w-3xl px-4 pb-12 pt-6 sm:pt-8">
+    <header id="top" class="scroll-mt-24">
+      <nav aria-label="Breadcrumb" class="mb-4 text-xs text-brand-400 dark:text-brand-300"><a href="/" class="hover:text-headline">Home</a> / <span aria-current="page">Board Evolver</span></nav>
+<h1 class="text-3xl font-extrabold leading-tight text-headline dark:text-headline-dark sm:text-4xl">Word Hunt Board Evolver: Build High Scoring Practice Boards</h1>
+<p class="mt-3 text-gray-600 dark:text-gray-300">Grow high scoring practice boards and watch the scores climb.</p>
+    </header>
+    <div class="mt-5 text-left lg:-mx-20"><BoardEvolver client:load /></div>
+<section id="what-is-the-board-evolver" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">What Is the Board Evolver?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">It's a free tool that builds Word Hunt boards packed with points. It starts with random boards, scores every one, keeps the best, and mixes them to make new boards. Over many rounds, called generations, the best score rises or holds steady, because the top boards are always kept. You can use the boards it builds as practice grids, or just to see what a Word Hunt high score board looks like.</p>
+</section>
+<section id="how-to-use-the-evolver" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How to Use the Evolver</h2></div>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">1</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Choose a 4x4 or 5x5 Board</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Pick the board size you want to practice on. A 5x5 board has 25 tiles, so it usually reaches higher scores than a 4x4 board, but each generation takes longer to score.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">2</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Set Population Size and Mutation Rate</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Population size is how many boards compete in each generation. It starts at 60, and the lowest you can set is 10. Mutation rate is the chance that any single letter changes when a new board is made. It starts at 8% and can range from 1% to 50%.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">3</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Adjust the Interval and Turn On Extreme Mode</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The interval sets how long the tool waits between generations, from 30 to 1,000 milliseconds, starting at 120. A shorter interval runs faster but works your device harder. Extreme Mode gives some new boards a much bigger shake up, which helps when the score stops rising.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">4</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Start, Stop, and Reset the Evolution</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Press Start to begin and Stop to pause. Reset throws out every board and starts fresh with new random ones. It also applies any new settings you've chosen.</p></div>
+<div class="card !p-5 sm:col-span-2"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">5</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Read Your Results: Best Score, Words Found, and the Score Chart</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The tool shows the current generation, the best score so far, the best board, and every word on that board. The score chart tracks the best score over time, so you can see when progress slows down.</p>
+<div class="mt-4 overflow-x-auto rounded-2xl border border-brand-100 shadow-sm dark:border-brand-700"><table class="w-full text-sm"><thead class="bg-accent-500 text-brand-700 dark:bg-accent-600"><tr><th scope="col" class="px-4 py-3 text-left font-semibold">What you see</th><th scope="col" class="px-4 py-3 text-left font-semibold">What it means</th></tr></thead><tbody class="divide-y divide-brand-100 dark:divide-brand-700"><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Generation</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">How many rounds of scoring and mixing have run so far</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Best Score</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Total points for the best board. A plus sign means the board has words of 9 or more letters, whose points aren't confirmed, so the true score may be higher</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Words Found</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">How many words the best board holds</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Eval Time</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">How many milliseconds the tool took to score one full generation</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Status</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">Running while the tool evolves boards, Idle when it's stopped</td></tr></tbody></table></div></div>
+</div>
+</section>
+<section id="how-does-the-evolver-build-better-boards" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How Does the Evolver Build Better Boards?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The tool uses a genetic algorithm, a method that copies how living things change over generations. It keeps a whole population of possible answers, changes some of them at random, and lets the best ones survive.</p>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">1</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Random Starting Boards Weighted by Letter Frequency</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The first boards use random letters, but common letters like E, A, R, and I show up more often than rare ones like Q and Z. That gives the starting boards a fair chance of holding real words.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">2</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Scoring Each Board With the Solver Engine</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Every board is scored with the same word list and search method as our Word Hunt Solver. Each word earns points by length, and the total is the board's fitness score.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">3</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Keeping the Best Boards and Mixing Them</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The top 15% of boards move on to the next generation unchanged. New boards are made by joining the first part of one top board with the rest of another, then changing a few letters at random.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">4</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Mutation and Extreme Mode: Breaking Out of Plateaus</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Sometimes the best score stops rising because every board looks alike. This is called a plateau. With Extreme Mode on, about 1 in 10 new boards gets four times the normal mutation rate. Those bigger changes can lead to a better board the regular process would miss.</p></div>
+</div>
+</section>
+<section id="what-is-the-highest-word-hunt-score-possible" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">What Is the Highest Word Hunt Score Possible?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">No one has published a proven highest score or a verified world record for Word Hunt. The closest research is about Boggle, a similar game with a different point system. In 2025, software engineer Dan Vanderkam published a computational proof of the highest scoring 4x4 Boggle board. The board PERSLATGSINETERS scores 3,625 points using Boggle scoring. His work also showed that hill climbing, a search method related to the one our Evolver uses, finds the true best boards. Because Word Hunt scores words differently, that board is not proven to be the best Word Hunt board.</p>
+<p class="mt-2 text-gray-600 dark:text-gray-300">In one of our test runs, the Evolver built this 4x4 board, which holds 738 words. The longest is 10 letters long. Type it into our <a href="/" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">free solver</a> to check it yourself.</p>
+<div class="mt-4 grid w-56 gap-1.5" style="grid-template-columns: repeat(4, minmax(0,1fr));" role="img" aria-label="Word Hunt board: G I E R / N L T P / E T A S / S R E D"><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">G</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">I</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">E</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">R</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">N</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">L</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">T</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">P</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">E</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">T</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">A</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">S</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">S</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">R</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">E</div><div class="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">D</div></div>
+</section>
+<section id="why-are-some-evolved-words-so-unusual" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Why Are Some Evolved Words So Unusual?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The Evolver counts every word in the ENABLE list, including rare ones. So its best boards often include words you may not know. GamePigeon uses its own word list, which isn't public, so we can't say whether the game accepts these rare words. For practice, start with the common words on each board.</p>
+</section>
+<section id="how-to-practice-word-hunt-on-your-own" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How to Practice Word Hunt on Your Own</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Let the Evolver run until the score levels off, then press Stop. Study the best board for a minute and try to find its longest words before you look at the list. Then check the list and note the patterns you missed. Our <a href="/guides/word-hunt-tips#longer-words" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">longer word tips</a> show what to look for.</p>
+</section>
+<section id="best-settings-for-your-device" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Best Settings for Your Device</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The Evolver runs in a background thread, so the page won't freeze, but large populations still take time and memory. Start with the default settings. If your phone feels slow, lower the population or raise the interval. On a computer, you can try a bigger population to explore more boards each generation.</p>
+</section>
+<section id="board-evolver-vs-word-hunt-solver" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M12 3v18M5 7h14M5 7l-3 7a4 4 0 0 0 6 0L5 7zM19 7l-3 7a4 4 0 0 0 6 0l-3-7z"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Board Evolver vs Word Hunt Solver</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The <a href="/" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Word Hunt Solver</a> finds every word on a board you type in. The Evolver creates new boards with high scores. Use the solver for your real games and the Evolver for practice.</p>
+</section>
+<section id="frequently-asked-questions" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Frequently Asked Questions</h2></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Why does my Score stop going up?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">The boards have reached a plateau, where small changes no longer help. Turn on Extreme Mode, raise the mutation rate a little, or press Reset to start over with new boards.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Does a bigger Population give a better Board?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">It can, because more boards are tested each generation. But each generation also takes longer, so a bigger population isn't always faster at finding a high score.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Why is it slow on my Phone?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Scoring many boards takes a lot of work. Lower the population size or raise the interval to make it lighter.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Does it use the same Word List as the Solver?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. Both use the ENABLE word list, with every word of 3 letters or more.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Is the Board Evolver free?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. It's free, with no account or download.</p></div>
+</section>
+<section id="sources" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sources</h2></div>
+<ul class="mt-3 list-disc space-y-2 pl-5 text-gray-600 dark:text-gray-300"><li><a href="https://www.danvk.org/2025/04/23/boggle-solved.html" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark" rel="noopener" target="_blank">"After 20 Years</a>, the Globally Optimal Boggle Board," Dan Vanderkam</li><li><a href="https://arxiv.org/abs/2507.02117" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark" rel="noopener" target="_blank">"A Computational Proof of the Highest Scoring Boggle Board," Dan Vanderkam</a>, arXiv</li><li><a href="https://www.solver.com/genetic-evolutionary-introduction" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark" rel="noopener" target="_blank">Genetic Algorithms and Evolutionary Algorithms</a>, Frontline Systems</li></ul>
+</section>
+  </article>
 </Layout>

@@ -1,268 +1,271 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import WordHuntSolver from "../components/WordHuntSolver.tsx";
-
-const faqs = [
-  {
-    q: "Is Word Hunt the same as Boggle?",
-    a: "Word Hunt and Boggle share the same core idea, connecting adjacent letters to spell words, but Word Hunt is the GamePigeon version played inside iMessage.",
-  },
-  {
-    q: "Does Word Hunt only use a 4x4 grid?",
-    a: "No. Word Hunt boards can be 4x4 or 5x5 depending on how the game is set up. Use the rows and columns controls above to match your exact board.",
-  },
-  {
-    q: "Is Word Hunt scored like Scrabble, with different point values per letter?",
-    a: "No. Word Hunt scores are based only on word length, every letter counts the same, unlike Scrabble where letters like Q and Z are worth more.",
-  },
-  {
-    q: "Can words go diagonally, not just up, down, left or right?",
-    a: "Yes, valid words can be formed by connecting letters in any direction, including diagonally.",
-  },
-  {
-    q: "Is using a word hunt solver considered cheating?",
-    a: "It depends on how you use it. Many players use a solver in single player practice mode or casually between friends, while some prefer to play head to head without any help.",
-  },
-  {
-    q: "Is this affiliated with GamePigeon?",
-    a: "No, this is an independent tool and is not affiliated with or endorsed by GamePigeon.",
-  },
-];
-
 const schema = [
-  {
-    "@context": "https://schema.org",
-    "@type": "WebApplication",
-    name: "Word Hunt Solver",
-    url: "https://www.wordhuntsolvers.com/",
-    applicationCategory: "GameApplication",
-    operatingSystem: "Any",
-    offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-    description:
-      "Enter your Word Hunt grid and get every valid word instantly. Free word hunt solver for GamePigeon and similar grid word games.",
+ {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "@id": "https://www.wordhuntsolvers.com/#app",
+  "name": "Word Hunt Solver",
+  "url": "https://www.wordhuntsolvers.com/",
+  "applicationCategory": "GameApplication",
+  "operatingSystem": "Any",
+  "browserRequirements": "Requires a modern web browser with JavaScript enabled.",
+  "isAccessibleForFree": true,
+  "offers": {
+   "@type": "Offer",
+   "price": "0",
+   "priceCurrency": "USD"
   },
-  {
-    "@context": "https://schema.org",
-    "@type": "FAQPage",
-    mainEntity: faqs.map((f) => ({
-      "@type": "Question",
-      name: f.q,
-      acceptedAnswer: { "@type": "Answer", text: f.a },
-    })),
-  },
-];
-
-const guides = [
-  {
-    href: "/guides/word-hunt-cheat",
-    title: "Word Hunt Cheat",
-    desc: "Get every GamePigeon Word Hunt answer, scoring rules, and whether using a solver counts as cheating.",
-  },
-  {
-    href: "/guides/free-word-finder",
-    title: "Free Word Finder",
-    desc: "Find words from any loose set of letters for Scrabble, Words With Friends, and more, completely free.",
-  },
-  {
-    href: "/guides/wordscapes-help",
-    title: "Wordscapes Help",
-    desc: "Stuck on a Wordscapes level? Get the full cheat sheet and understand bonus words.",
-  },
+  "description": "Type or upload a Word Hunt board and see every valid word from the ENABLE word list, with points and swipe paths. Supports boards from 3x3 to 6x6.",
+  "featureList": [
+   "Boards from 3x3 to 6x6",
+   "Type letters or upload a screenshot",
+   "Every valid word grouped by length with points and a board total",
+   "Swipe order numbered on the grid for each word",
+   "Filter results by length, first letters, or last letters",
+   "Copy the word list in one tap",
+   "Runs in the browser with no signup"
+  ],
+  "publisher": {
+   "@id": "https://www.wordhuntsolvers.com/#organization"
+  }
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "VideoObject",
+  "name": "How to Use Our Word Hunt Solver",
+  "description": "A 49 second walkthrough: type a 4x4 Word Hunt board, tap Solve to see every valid word with points, then switch to a 5x5 board.",
+  "thumbnailUrl": [
+   "https://www.wordhuntsolvers.com/videos/how-to-use-word-hunt-solver-poster.webp"
+  ],
+  "uploadDate": "2026-10-06",
+  "duration": "PT49S",
+  "contentUrl": "https://www.wordhuntsolvers.com/videos/how-to-use-word-hunt-solver.mp4",
+  "inLanguage": "en-US",
+  "transcript": "Stuck on a Word Hunt board? Let's find every word, fast! Just head to wordhuntsolvers.com. Start with a 4x4 grid. Type each letter right where it sits on your game board. The cursor jumps ahead for you, so it's quick! Now hit Solve. Boom! Every word, longest first, with its points. 50 words on this board! Got a bigger board? Tap Clear, then set rows and columns to 5. Type in your new letters, same as before. Hit Solve again. 123 words! The top one is worth 2,200 points. Now it's your turn!"
+ },
+ {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+   {
+    "@type": "Question",
+    "name": "Does this Tool use AI?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "No. It uses a fixed word list and a search through touching tiles, so the same board always gives the same results. Screenshot uploads read each letter by comparing its shape with letter patterns, and that also runs in your browser."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Can I use it on Android?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. It runs in any modern browser on Android, iPhone, iPad, or a computer. GamePigeon itself only runs in iMessage on Apple devices."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Is it free?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. It's free to use, with no account or signup."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Do I need to download an App?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "No. Open this page and start typing or upload a screenshot."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Can I upload a Screenshot of my Board?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. Upload a screenshot from your iPhone, iPad, Android phone, or computer. The solver reads the letters, works out the grid size, and fills in the board. Check the letters, fix any tile it misread, then tap Solve."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Is Word Hunt scored like Scrabble?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "No. Scrabble gives letters different values and has bonus squares. Word Hunt scores by word length only."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Does it work on 5x5 and 6x6 Boards?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. Set the rows and columns to match your board, from 3x3 up to 6x6."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Does it work for Word Hunt on iMessage?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "Yes. Type the letters from your iMessage board in the same layout, or upload a screenshot, then tap Solve."
+    }
+   },
+   {
+    "@type": "Question",
+    "name": "Is this Site affiliated with GamePigeon?",
+    "acceptedAnswer": {
+     "@type": "Answer",
+     "text": "No. This is an independent site with no connection to GamePigeon or Apple."
+    }
+   }
+  ]
+ }
 ];
 ---
 
 <Layout
-  title="Word Hunt Solver: Solve Any 4x4 or 5x5 Board"
-  description="Solve any Word Hunt board and get word hunt cheat tips for GamePigeon with our free word hunt solver. Instant results, no signup needed."
+  title="Word Hunt Solver: Find Every Word on Your Board"
+  description="Type or upload your Word Hunt board and see every valid word with its points and swipe path. Free for GamePigeon boards from 3x3 to 6x6, no signup."
   path="/"
-  ogImage="/images/word-hunt-solver-logo.webp"
   schema={schema}
 >
-  <section id="top" class="mx-auto max-w-3xl px-4 pt-6 pb-4 text-center sm:pt-8">
-    <h1 class="text-3xl font-extrabold leading-tight text-headline dark:text-headline-dark sm:text-4xl">
-      Word Hunt Solver: Solve Any 4x4 or 5x5 Board Instantly
-    </h1>
-    <p class="badge-success mt-3 inline-flex">
-      Free, accurate word hunt solving with no signup required.
-    </p>
-    <div class="mt-5 text-left">
-      <WordHuntSolver client:load />
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10 text-center">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">What Is a Word Hunt Solver</h2>
-    <p class="mx-auto mt-2 max-w-3xl text-gray-600 dark:text-gray-300 text-sm">
-      A word hunt solver is a free tool that finds every valid word hidden in a Word Hunt grid the
-      moment you enter your letters. Type in your board, press Solve, and see every playable word
-      ranked by score, all in a few seconds.
-    </p>
-    <p class="mx-auto mt-3 max-w-3xl text-gray-600 dark:text-gray-300 text-sm">
-      Works for GamePigeon Word Hunt and other grid based word games that use the same
-      rules for connecting adjacent letters.
-    </p>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <div class="grid items-center gap-8 lg:grid-cols-2">
-      <div>
-        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">How to Use the Word Hunt Solver</h2>
-        <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
-          Fill in your grid and press Solve, the tool returns every valid word in seconds.
-        </p>
-        <div class="mt-6 grid gap-5 sm:grid-cols-2">
-          <div class="card">
-            <h3 class="font-bold text-gray-900 dark:text-white">Enter Your Word Hunt Grid</h3>
-            <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
-              Fill in each box with the letters shown on your screen, left to right, top to bottom. Use the
-              rows and columns controls to match a 4x4 or 5x5 board.
-            </p>
-          </div>
-          <div class="card">
-            <h3 class="font-bold text-gray-900 dark:text-white">Get Every Valid Word Instantly</h3>
-            <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
-              Press Solve and the tool returns every word it finds, sorted from longest to shortest, so the
-              highest scoring options show up first.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div class="mx-auto aspect-[9/16] max-h-[480px] w-full max-w-[270px] overflow-hidden rounded-2xl border border-brand-100 shadow-sm dark:border-brand-700">
-        <video
-          src="/videos/use-of-word-hunt-solver.mp4"
-          controls
-          playsinline
-          preload="metadata"
-          class="h-full w-full object-cover"
-          aria-label="How to use the Word Hunt Solver"
-        >
-          Your browser does not support embedded videos.
-        </video>
-      </div>
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Word Hunt Scoring &amp; Point Values</h2>
-    <p class="mt-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-      Word Hunt scores by word length only, every letter counts the same, unlike Scrabble where letters
-      like Q are worth more.
-    </p>
-    <div class="mt-6 overflow-hidden rounded-2xl border border-brand-100 dark:border-brand-700">
-      <table class="w-full text-sm">
-        <thead class="bg-brand-50 text-brand-600 dark:bg-brand-800 dark:text-white">
-          <tr>
-            <th class="px-4 py-3 text-left font-semibold">Word Length</th>
-            <th class="px-4 py-3 text-left font-semibold">Points</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-brand-100 dark:divide-brand-700">
-          {[
-            ["3 letters", "100 points"],
-            ["4 letters", "400 points"],
-            ["5 letters", "800 points"],
-            ["6 letters", "1,400 points"],
-            ["7 letters", "1,800 points"],
-            ["8 or more letters", "2,200+ points"],
-          ].map(([len, pts]) => (
-            <tr>
-              <td class="px-4 py-3 text-gray-600 dark:text-gray-300 text-sm">{len}</td>
-              <td class="px-4 py-3 font-semibold text-brand-700 dark:text-white">{pts}</td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Word Hunt Strategy Tips</h2>
-    <p class="mt-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-      Scan for common prefixes and suffixes first, then build outward from short bases.
-    </p>
-    <ul class="mt-6 grid gap-3 sm:grid-cols-2">
-      {[
-        "Scan for common prefixes like RE, UN and PRE first",
-        "Look for suffixes such as ING, ED and TION",
-        "Start with short three and four letter bases, then build outward",
-        "Recheck the board after each round, since letter paths change every time",
-      ].map((tip) => (
-        <li class="card flex items-start gap-3">
-          <span class="mt-0.5 flex h-6 w-6 flex-none items-center justify-center rounded-full bg-success-bg text-xs font-bold text-green-600 dark:bg-success/20 dark:text-green-400">✓</span>
-          <span class="text-gray-600 dark:text-gray-300 text-sm">{tip}</span>
-        </li>
-      ))}
-    </ul>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Bonus: Find Words From Any Set of Letters</h2>
-    <p class="mt-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-      Beyond the grid solver, you can also enter a loose set of letters, not tied to a grid, to get a list
-      of playable words. This works well for Scrabble racks or Words With Friends tiles.
-    </p>
-    <h3 class="mt-4 font-bold text-center text-gray-900 dark:text-white">Filter Words by Length or Pattern</h3>
-    <p class="mt-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-      Use the starts with, ends with, and length filters to narrow results down to the exact word you need.
-    </p>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10 text-center">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">Word Hunt Guides &amp; Tips</h2>
-    <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">
-      Browse focused guides for specific word games, each one built to solve a single problem fast.
-    </p>
-    <div class="mt-6 grid gap-5 sm:grid-cols-3">
-      {guides.map((g, i) => {
-        const styles = [
-          "bg-warning-bg text-amber-700 dark:bg-warning/20 dark:text-amber-300",
-          "bg-success-bg text-green-700 dark:bg-success/20 dark:text-green-300",
-          "bg-secondary-300/30 text-secondary-600 dark:bg-secondary-500/20 dark:text-secondary-300",
-        ];
-        return (
-          <a href={g.href} class="card block text-center transition hover:-translate-y-1 hover:shadow-md">
-            <span class={`inline-block rounded-full px-3 py-1 text-xs font-semibold ${styles[i % styles.length]}`}>Guide</span>
-            <h3 class="mt-3 font-bold text-gray-900 dark:text-white">{g.title}</h3>
-            <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">{g.desc}</p>
-            <span class="mt-3 inline-block text-sm font-semibold text-headline dark:text-headline-dark">Read the guide &rarr;</span>
-          </a>
-        );
-      })}
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">About This Word Hunt Solver</h2>
-    <p class="mt-2 text-center text-gray-600 dark:text-gray-300 text-sm">
-      This tool checks your grid against a real dictionary and traces valid paths between adjacent
-      letters, including diagonals. It is built for players who want to practice and improve, not just
-      copy answers.
-    </p>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <h2 class="text-2xl font-bold text-center text-gray-900 dark:text-white mb-2">FAQs About Word Hunt Solver</h2>
-    <div class="mt-6 space-y-3">
-      {faqs.map((f) => (
-        <details class="card group">
-          <summary class="flex cursor-pointer items-center justify-between">
-            <h3 class="font-bold text-gray-900 dark:text-white">{f.q}</h3>
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="ml-4 h-5 w-5 flex-none text-secondary-600 transition-transform group-open:rotate-180"><path d="M6 9l6 6 6-6" /></svg>
-          </summary>
-          <p class="mt-2 text-gray-600 dark:text-gray-300 text-sm">{f.a}</p>
-        </details>
-      ))}
-    </div>
-  </section>
-
-  <section class="mx-auto max-w-6xl px-4 py-10">
-    <div class="card-cta flex flex-col items-center gap-4 text-center">
-      <h2 class="text-2xl font-bold">Start Solving Your Word Hunt Board Today</h2>
-      <p class="max-w-2xl text-brand-600">
-        Whether you are stuck on today's board or want to get better at Word Hunt long term, this word
-        hunt solver gives you every valid word in seconds, so you can play your best move with confidence.
-      </p>
-      <a href="#top" class="btn-cta">Solve Your Board Now</a>
-    </div>
-  </section>
+  <article class="mx-auto max-w-3xl px-4 pb-12 pt-6 sm:pt-8">
+    <header id="top" class="scroll-mt-24 text-center">
+      <h1 class="text-3xl font-extrabold leading-tight text-headline dark:text-headline-dark sm:text-4xl">Word Hunt Solver: Find Every Word on Your Board</h1>
+<p class="mt-3 text-gray-600 dark:text-gray-300">Type or upload your board and see every word's path.</p>
+    </header>
+    <div class="mt-5 text-left"><WordHuntSolver client:load /></div>
+<nav aria-label="On this page" class="mt-6"><details class="card" open><summary class="flex cursor-pointer items-center gap-2 font-bold text-gray-900 dark:text-white"><span class="text-headline dark:text-headline-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span>On This Page</summary><ol class="mt-3 grid list-decimal gap-x-8 gap-y-1 pl-5 text-sm sm:grid-cols-2"><li><a href="#what-is" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">What It Is</a></li><li><a href="#how-it-works" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">How It Works</a></li><li><a href="#how-to-use" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">How to Use It</a></li><li><a href="#gamepigeon" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Word Hunt on GamePigeon</a></li><li><a href="#scoring" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Scoring</a></li><li><a href="#how-to-win" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Quick Tips</a></li><li><a href="#rejected-words" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Rejected Words</a></li><li><a href="#what-to-look-for" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">What to Look For</a></li><li><a href="#other-tools" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Other Word Tools</a></li><li><a href="#guides" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Guides and Tools</a></li><li><a href="#about" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">About</a></li><li><a href="#faq" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">FAQ</a></li></ol></details></nav>
+<section id="what-is" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">What Is a Word Hunt Solver?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">It's a free tool that lists every word from its word list that you can build on a Word Hunt board. You type or upload the letters in the same spots they appear in the game, and the tool follows every path of touching tiles that could still form a word. Think of it as a word solver made for one job: finding words on a letter grid.</p>
+</section>
+<section id="how-it-works" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How Does a Word Hunt Solver Work?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">It follows the game's rules, then checks each word against a word list.</p>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">Following Connected Letters Across the Grid</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The solver starts on each tile, steps to a neighboring tile, and builds letter sequences one tile at a time. It stores its word list as a trie, which is a tree of word beginnings. If no word in its list starts with the letters on the current path, it drops that path and tries another. This is called a depth first search.</p></div>
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">Which Word List Our Solver Uses</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Every match is checked against the ENABLE word list, a public domain dictionary built for word game players. The solver checks every word in that list that is 3 letters or longer.</p></div>
+</div>
+</section>
+<section id="how-to-use" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How to Use Our Word Hunt Solver Step by Step</h2></div>
+<figure class="mx-auto mt-4 w-full max-w-[300px]">
+  <div class="aspect-[9/16] overflow-hidden rounded-2xl border border-brand-100 shadow-sm dark:border-brand-700">
+    <video controls playsinline preload="none" poster="/videos/how-to-use-word-hunt-solver-poster.webp" width="1080" height="1920" class="h-full w-full object-cover" aria-describedby="video-transcript">
+      <source src="/videos/how-to-use-word-hunt-solver.mp4" type="video/mp4" />
+      <track kind="captions" src="/videos/how-to-use-word-hunt-solver.vtt" srclang="en" label="English" />
+      Your browser does not support embedded videos.
+    </video>
+  </div>
+  <figcaption class="mt-2 text-center text-sm text-gray-600 dark:text-gray-300">How to use our Word Hunt Solver (49 seconds)</figcaption>
+</figure>
+<details id="video-transcript" class="card mt-4">
+  <summary class="cursor-pointer font-semibold text-gray-900 dark:text-white">Video transcript</summary>
+  <p class="mt-2 text-gray-600 dark:text-gray-300">Stuck on a Word Hunt board? Let's find every word, fast! Just head to wordhuntsolvers.com. Start with a 4x4 grid. Type each letter right where it sits on your game board. The cursor jumps ahead for you, so it's quick! Now hit Solve. Boom! Every word, longest first, with its points. 50 words on this board! Got a bigger board? Tap Clear, then set rows and columns to 5. Type in your new letters, same as before. Hit Solve again. 123 words! The top one is worth 2,200 points. Now it's your turn!</p>
+</details>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">1</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Set Your Grid Size (3x3 up to 6x6)</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Pick the number of rows and columns, from 3 to 6 each. Most Word Hunt boards are 4x4 or 5x5. If a spot on your board has no letter, leave that tile blank and the solver will skip it.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">2</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Type or Upload Your Board Letters</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Enter each letter in the same spot it holds in the game. The cursor moves to the next tile on its own. You can also upload a screenshot of your board instead. The solver reads the letters and fills in the grid for you. Check each tile and fix any mistakes before you solve. Your last board stays saved on your device, so it is still there if you reload the page.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">3</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Tap Solve to See Every Word</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The results list shows every valid word, grouped by length with the longest first, plus the points for each word and the total for the board. You can filter the list by word length or by the letters a word starts or ends with, and copy it in one tap.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">4</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Tap Any Word to See Its Path on the Board</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The tiles for that word light up on the grid, and numbers on the tiles show the swipe order, starting at 1.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">5</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Keyboard Shortcuts for Faster Solving</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">The arrow keys move between tiles, Enter solves the board, and Backspace jumps back one tile.</p></div>
+</div>
+</section>
+<section id="gamepigeon" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">What Is Word Hunt on GamePigeon?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Word Hunt is one of the word puzzle games in GamePigeon. You find as many words as you can on a letter grid before time runs out. It plays a lot like Boggle.</p>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">What Is GamePigeon?</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">GamePigeon is a pack of games that runs inside iMessage on iPhone and iPad. It also includes other word games, such as Anagrams and Word Bites.</p></div>
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">How Do You Play Word Hunt on iMessage?</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Open a chat, tap the GamePigeon app, pick Word Hunt, and send it to a friend. The higher score wins.</p></div>
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">Word Hunt Rules: How Letters Connect</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Drag your finger across adjacent letters to make a word. You can move up, down, sideways, or diagonally. Every word needs at least 3 letters, and you can't use the same tile twice in one word.</p></div>
+</div>
+</section>
+<section id="scoring" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How Does Word Hunt Scoring Work?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Word Hunt scores each word by its length. Every letter counts the same, and there are no bonus squares, so a Q earns no more than an E.</p>
+<div class="mt-4 overflow-x-auto rounded-2xl border border-brand-100 shadow-sm dark:border-brand-700"><table class="w-full text-sm"><thead class="bg-accent-500 text-brand-700 dark:bg-accent-600"><tr><th scope="col" class="px-4 py-3 text-left font-semibold">Word length</th><th scope="col" class="px-4 py-3 text-left font-semibold">Points</th></tr></thead><tbody class="divide-y divide-brand-100 dark:divide-brand-700"><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">3 letters</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">100</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">4 letters</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">400</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">5 letters</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">800</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">6 letters</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">1,400</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">7 letters</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">1,800</td></tr><tr class="odd:bg-white even:bg-brand-50/40 dark:odd:bg-brand-900 dark:even:bg-brand-800"><td class="px-4 py-3 text-gray-600 dark:text-gray-300">8 letters</td><td class="px-4 py-3 text-gray-600 dark:text-gray-300">2,200</td></tr></tbody></table></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">One 7 letter word earns as much as eighteen 3 letter words.</p>
+</section>
+<section id="how-to-win" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"/><path d="M17 5h3v2a3 3 0 0 1-3 3M7 5H4v2a3 3 0 0 0 3 3"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Quick Tips to Score More in Word Hunt</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Long words win rounds, because points jump with every extra letter. Start from the center tiles, where each tile touches the most neighbors, and check diagonals as often as rows. Spotting words in a word adds quick points, and adding S, ED, or ING to a word you've found often makes a new one. For the full routine, scoring math, and two real boards we solved, see our <a href="/guides/word-hunt-tips" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Word Hunt strategy guide</a>.</p>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">1</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">How Can a Solver Help You Get Better at Word Hunt?</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">After a round, enter the same board here and compare the results with the words you found. The words you missed show which patterns to watch for next time. For practice, our <a href="/evolver" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">Board Evolver</a> builds boards with high total scores.</p></div>
+</div>
+</section>
+<section id="rejected-words" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Why Didn't Word Hunt Accept My Word?</h2></div>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">1</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">The Game Uses a Different Word List</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">We haven't found a public copy of GamePigeon's word list. Our solver uses ENABLE, and the two lists aren't identical, so the game sometimes refuses a word the solver shows.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">2</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">The Letters Don't Connect</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Each letter must touch the one before it, and no tile can repeat.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">3</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">The Board Was Entered Incorrectly</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">One wrong tile changes every result, so check your letters before you tap Solve.</p></div>
+<div class="card !p-5"><div class="flex items-start gap-3"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-headline text-sm font-bold text-white dark:bg-headline-dark">4</span><h3 class="text-lg font-bold text-gray-900 dark:text-white">Why Is a Word Missing From the Results?</h3></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">If you can't find a word you expected, check two things. The solver lists a word only if its letters connect on your board and it appears in the ENABLE list. Names aren't in that list, and words shorter than 3 letters don't count in Word Hunt.</p></div>
+</div>
+</section>
+<section id="what-to-look-for" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">What Should You Look for in a Word Hunt Solver?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Look for six things: support for the board sizes you play, quick board entry by typing or screenshot, word paths shown on the grid, a named word list, no download or signup, and privacy for your board. This tool covers all six.</p>
+</section>
+<section id="other-tools" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M12 3v18M5 7h14M5 7l-3 7a4 4 0 0 0 6 0L5 7zM19 7l-3 7a4 4 0 0 0 6 0l-3-7z"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">How Is This Tool Different From Other Word Tools?</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Each word game solver works differently. A word search solver finds hidden words that run in straight lines. A word finder, also called an unscrambler, takes loose letters you can rearrange in any order. Word Hunt works differently: the letters stay in place, and every word has to follow touching tiles. See our <a href="/guides/word-hunt-solver-vs-word-finder" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark">comparison guide</a> for details.</p>
+</section>
+<section id="guides" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5v14z"/><path d="M6.5 17A2.5 2.5 0 0 0 4 19.5 2.5 2.5 0 0 0 6.5 22H20v-5"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">More Word Hunt Guides and Tools</h2></div>
+<div class="mt-4 grid gap-4 sm:grid-cols-3"><a href="/evolver" class="card group flex items-start gap-3 !p-5 transition hover:border-headline"><span class="text-headline dark:text-headline-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span><span class="block font-bold text-gray-900 group-hover:text-headline dark:text-white">Board Evolver</span><span class="mt-1 block text-sm text-gray-600 dark:text-gray-300">high scoring practice boards.</span></span></a><a href="/guides/word-hunt-tips" class="card group flex items-start gap-3 !p-5 transition hover:border-headline"><span class="text-headline dark:text-headline-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span><span class="block font-bold text-gray-900 group-hover:text-headline dark:text-white">Word Hunt tips guide</span><span class="mt-1 block text-sm text-gray-600 dark:text-gray-300">scanning, longer words, and real solved boards.</span></span></a><a href="/guides/word-hunt-cheat" class="card group flex items-start gap-3 !p-5 transition hover:border-headline"><span class="text-headline dark:text-headline-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span><span class="block font-bold text-gray-900 group-hover:text-headline dark:text-white">Word Hunt Cheat Guide</span><span class="mt-1 block text-sm text-gray-600 dark:text-gray-300">fair play and letter patterns.</span></span></a><a href="/guides/word-hunt-solver-vs-word-finder" class="card group flex items-start gap-3 !p-5 transition hover:border-headline"><span class="text-headline dark:text-headline-dark"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M5 12h14M12 5l7 7-7 7"/></svg></span><span><span class="block font-bold text-gray-900 group-hover:text-headline dark:text-white">Word tool comparison</span><span class="mt-1 block text-sm text-gray-600 dark:text-gray-300">which tool fits which puzzle.</span></span></a></div>
+</section>
+<section id="about" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">About This Tool</h2></div>
+<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">Purpose of Building This Tool</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">This tool helps Word Hunt players check every word on a board, see exactly how to swipe it, and learn from the words they missed.</p></div>
+<div class="card !p-5"><h3 class="text-lg font-bold text-gray-900 dark:text-white">Your Board Stays on Your Device</h3>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Everything runs in your browser. Your letters and screenshots are never sent to our server.</p></div>
+</div>
+</section>
+<section id="faq" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><circle cx="12" cy="12" r="10"/><path d="M9.1 9a3 3 0 0 1 5.8 1c0 2-3 3-3 3M12 17h.01"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Frequently Asked Questions</h2></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Does this Tool use AI?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">No. It uses a fixed word list and a search through touching tiles, so the same board always gives the same results. Screenshot uploads read each letter by comparing its shape with letter patterns, and that also runs in your browser.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Can I use it on Android?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. It runs in any modern browser on Android, iPhone, iPad, or a computer. GamePigeon itself only runs in iMessage on Apple devices.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Is it free?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. It's free to use, with no account or signup.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Do I need to download an App?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">No. Open this page and start typing or upload a screenshot.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Can I upload a Screenshot of my Board?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. Upload a screenshot from your iPhone, iPad, Android phone, or computer. The solver reads the letters, works out the grid size, and fills in the board. Check the letters, fix any tile it misread, then tap Solve.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Is Word Hunt scored like Scrabble?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">No. Scrabble gives letters different values and has bonus squares. Word Hunt scores by word length only.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Does it work on 5x5 and 6x6 Boards?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. Set the rows and columns to match your board, from 3x3 up to 6x6.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Does it work for Word Hunt on iMessage?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">Yes. Type the letters from your iMessage board in the same layout, or upload a screenshot, then tap Solve.</p></div>
+<div class="card mt-3 !p-5"><p class="flex items-start gap-3 font-bold text-gray-900 dark:text-white"><span class="inline-flex h-7 w-7 flex-none items-center justify-center rounded-full bg-accent-500 text-sm font-bold text-brand-700">Q</span><span>Is this Site affiliated with GamePigeon?</span></p><p class="mt-2 text-gray-600 dark:text-gray-300 pl-10">No. This is an independent site with no connection to GamePigeon or Apple.</p></div>
+</section>
+<section id="help-us-improve-this-tool" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Help Us Improve This Tool</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Found a bug, a word the solver missed, or have an idea for a new feature? Send us your feedback.</p>
+<a href="/contact" class="btn-accent mt-4 inline-flex items-center gap-2"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>Send Feedback</a>
+</section>
+<section id="start-solving-your-word-hunt-board-now" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><polygon points="6 3 20 12 6 21 6 3"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Start Solving Your Word Hunt Board Now</h2></div>
+<p class="mt-2 text-gray-600 dark:text-gray-300">Scroll up, type your letters or upload a screenshot, and tap Solve.</p>
+</section>
+<section id="sources" class="scroll-mt-24 py-6">
+<div class="mb-3 flex items-center gap-3"><span class="inline-flex h-10 w-10 flex-none items-center justify-center rounded-xl bg-accent-500 text-brand-700 dark:bg-accent-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" class="h-5 w-5"><path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/><path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/></svg></span><h2 class="text-2xl font-bold text-gray-900 dark:text-white">Sources</h2></div>
+<ul class="mt-3 list-disc space-y-2 pl-5 text-gray-600 dark:text-gray-300"><li><a href="https://apps.apple.com/us/app/gamepigeon/id1124197642" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark" rel="noopener" target="_blank">GamePigeon on the App Store</a>, Apple</li><li><a href="http://wiki.puzzlers.org/dokuwiki/doku.php?id=solving:wordlists:about:enable_readme" class="font-semibold text-headline underline-offset-2 hover:underline dark:text-headline-dark" rel="noopener" target="_blank">ENABLE word list readme</a>, National Puzzlers' League</li></ul>
+</section>
+  </article>
 </Layout>

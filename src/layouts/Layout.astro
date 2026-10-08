@@ -9,25 +9,39 @@ export interface Props {
   description: string;
   path: string;
   ogImage?: string;
+  ogImageAlt?: string;
+  ogImageWidth?: number;
+  ogImageHeight?: number;
   schema?: Record<string, any> | Record<string, any>[];
   noindex?: boolean;
+  ogType?: string;
 }
 
-const { title, description, path, ogImage, schema, noindex } = Astro.props;
+const { title, description, path, ogImage, ogImageAlt, ogImageWidth, ogImageHeight, schema, noindex, ogType } = Astro.props;
 
 const siteWideSchema = [
   {
     "@context": "https://schema.org",
     "@type": "Organization",
+    "@id": "https://www.wordhuntsolvers.com/#organization",
     name: "Word Hunt Solver",
+    alternateName: ["WordHuntSolvers", "wordhuntsolvers.com"],
     url: "https://www.wordhuntsolvers.com/",
     logo: "https://www.wordhuntsolvers.com/images/word-hunt-solver-logo.webp",
+    sameAs: [
+      "https://www.facebook.com/share/1EmaWxBSGG/",
+      "https://www.instagram.com/wordhuntsolver",
+    ],
   },
   {
     "@context": "https://schema.org",
     "@type": "WebSite",
+    "@id": "https://www.wordhuntsolvers.com/#website",
     name: "Word Hunt Solver",
+    alternateName: ["WordHuntSolvers", "wordhuntsolvers.com"],
     url: "https://www.wordhuntsolvers.com/",
+    inLanguage: "en-US",
+    publisher: { "@id": "https://www.wordhuntsolvers.com/#organization" },
   },
 ];
 
@@ -36,11 +50,11 @@ const allSchema = [...siteWideSchema, ...pageSchema];
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en-US">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <Seo title={title} description={description} path={path} ogImage={ogImage} schema={allSchema} noindex={noindex} />
+    <Seo title={title} description={description} path={path} ogImage={ogImage} ogImageAlt={ogImageAlt} ogImageWidth={ogImageWidth} ogImageHeight={ogImageHeight} schema={allSchema} noindex={noindex} ogType={ogType} />
     <script is:inline>
       // Runs before paint to avoid a flash of the wrong theme.
       // Light mode is the default for every new visitor, regardless of their
@@ -65,8 +79,31 @@ const allSchema = [...siteWideSchema, ...pageSchema];
       });
     </script>
 
-    <!-- Google Search Console / Analytics site verification tag goes here -->
-    <!-- Paste the full <meta name="google-site-verification" content="..." /> tag on the next line -->
+    <script is:inline>
+      // Google Consent Mode. Analytics stays off by default for visitors in the
+      // UK, the EEA, and Switzerland until they choose Accept. No ads are used,
+      // so ad storage is always off.
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag("consent", "default", {
+        analytics_storage: "denied", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied",
+        region: ["AT","BE","BG","HR","CY","CZ","DK","EE","FI","FR","DE","GR","HU","IE","IT","LV","LT","LU","MT","NL","PL","PT","RO","SK","SI","ES","SE","IS","LI","NO","GB","CH"],
+        wait_for_update: 500,
+      });
+      gtag("consent", "default", {
+        analytics_storage: "granted", ad_storage: "denied", ad_user_data: "denied", ad_personalization: "denied",
+      });
+      (function () {
+        var c = null;
+        try { c = localStorage.getItem("wh_consent"); } catch (e) {}
+        if (c === "granted" || c === "denied") gtag("consent", "update", { analytics_storage: c });
+      })();
+    </script>
+
+    <!-- ============================================================
+         GOOGLE ANALYTICS (GA4): paste your GA4 tag right here,
+         AFTER the consent code above, so consent applies first.
+         ============================================================ -->
 
   </head>
   <body class="flex min-h-screen flex-col">
@@ -75,5 +112,35 @@ const allSchema = [...siteWideSchema, ...pageSchema];
       <slot />
     </main>
     <Footer />
+
+    <div id="cookie-banner" hidden role="dialog" aria-live="polite" aria-label="Cookie choice" class="fixed inset-x-3 bottom-3 z-50 mx-auto max-w-xl rounded-2xl border border-brand-100 bg-white p-4 shadow-lg dark:border-brand-700 dark:bg-brand-800">
+      <p class="text-sm text-gray-600 dark:text-gray-300">
+        We use Google Analytics cookies to count visits and see which pages help people. They stay off unless you accept. <a href="/privacy-policy" class="font-semibold text-headline underline dark:text-headline-dark">Privacy policy</a>
+      </p>
+      <div class="mt-3 flex gap-3">
+        <button type="button" id="cookie-accept" class="btn-primary flex-1">Accept</button>
+        <button type="button" id="cookie-reject" class="btn-primary flex-1">Reject</button>
+      </div>
+    </div>
+    <script is:inline>
+      (function () {
+        var banner = document.getElementById("cookie-banner");
+        function save(choice) {
+          try { localStorage.setItem("wh_consent", choice); } catch (e) {}
+          gtag("consent", "update", { analytics_storage: choice });
+          banner.hidden = true;
+        }
+        document.getElementById("cookie-accept").addEventListener("click", function () { save("granted"); });
+        document.getElementById("cookie-reject").addEventListener("click", function () { save("denied"); });
+        var settings = document.getElementById("cookie-settings");
+        if (settings) settings.addEventListener("click", function () { banner.hidden = false; });
+        var stored = null;
+        try { stored = localStorage.getItem("wh_consent"); } catch (e) {}
+        var tz = "";
+        try { tz = Intl.DateTimeFormat().resolvedOptions().timeZone || ""; } catch (e) {}
+        var european = tz.indexOf("Europe/") === 0 || ["Atlantic/Reykjavik", "Atlantic/Canary", "Atlantic/Madeira", "Atlantic/Azores", "Atlantic/Faroe"].indexOf(tz) !== -1;
+        if (!stored && european) banner.hidden = false;
+      })();
+    </script>
   </body>
 </html>

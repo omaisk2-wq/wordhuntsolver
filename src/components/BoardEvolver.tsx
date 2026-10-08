@@ -19,23 +19,12 @@ export default function BoardEvolver() {
   const [running, setRunning] = useState(false);
   const [generation, setGeneration] = useState(0);
   const [bestScore, setBestScore] = useState(0);
-  const [bestBoard, setBestBoard] = useState<string[]>(() => randomBoard(4));
+  const [bestBoard, setBestBoard] = useState<string[]>(() => Array(16).fill(""));
   const [bestWords, setBestWords] = useState<string[]>([]);
   const [history, setHistory] = useState<number[]>([]);
   const [status, setStatus] = useState<"loading" | "ready">("loading");
   const [evalTimeMs, setEvalTimeMs] = useState<number | null>(null);
   const [hasRunOnce, setHasRunOnce] = useState(false);
-  const [boardMode, setBoardMode] = useState<"best" | "manual">("best");
-  const [manualBoard, setManualBoard] = useState<string[]>(() => Array(16).fill(""));
-
-  function setManualCell(i: number, val: string) {
-    const letter = val.replace(/[^a-zA-Z]/g, "").slice(-1).toUpperCase();
-    setManualBoard((old) => {
-      const next = old.slice();
-      next[i] = letter;
-      return next;
-    });
-  }
 
   const workerRef = useRef<Worker | null>(null);
 
@@ -77,12 +66,6 @@ export default function BoardEvolver() {
   }, []);
 
   useEffect(() => {
-    setManualBoard((old) => {
-      const cellCount = size * size;
-      const next = Array(cellCount).fill("");
-      for (let i = 0; i < Math.min(old.length, cellCount); i++) next[i] = old[i];
-      return next;
-    });
     // Best Board must always match the current grid size, otherwise the
     // display grid and the array length mismatch and the board renders broken.
     setBestBoard(randomBoard(size));
@@ -125,9 +108,6 @@ export default function BoardEvolver() {
     sendConfig();
     workerRef.current?.postMessage({ type: "resetPopulation" });
   }
-  function applyAndReset() {
-    reset();
-  }
 
   const maxHistory = history.length ? Math.max(...history, 1) : 1;
 
@@ -154,7 +134,7 @@ export default function BoardEvolver() {
           />
         </label>
         <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-          Mutation Rate
+          Mutation Rate <span className="font-normal text-brand-400">(0.08 = 8%)</span>
           <input
             type="number" min={0.01} max={0.5} step={0.01} value={mutationRate}
             onChange={(e) => setMutationRate(Math.min(0.5, Math.max(0.01, Number(e.target.value) || 0.01)))}
@@ -198,9 +178,6 @@ export default function BoardEvolver() {
       </p>
 
       <div className="mt-4 flex flex-wrap gap-3">
-        <button onClick={applyAndReset} className="btn-primary bg-brand-100 text-brand-600 hover:bg-brand-200 dark:bg-brand-700 dark:text-white">
-          Apply &amp; Reset
-        </button>
         <button onClick={start} disabled={running || status !== "ready"} className="btn-accent disabled:opacity-50">
           Start
         </button>
@@ -212,85 +189,49 @@ export default function BoardEvolver() {
         </button>
       </div>
 
-      <div className="mt-6 grid gap-6 lg:grid-cols-2">
-        <div>
-          <div className="grid grid-cols-2 gap-3 text-center sm:grid-cols-5">
-            <div className="card !p-4">
-              <p className="text-xs whitespace-nowrap text-brand-400">Generation</p>
-              <p className="text-xl font-extrabold whitespace-nowrap text-brand-700 dark:text-white">{generation}</p>
-            </div>
-            <div className="card !p-4">
-              <p className="text-xs whitespace-nowrap text-brand-400">Best Score</p>
-              <p className="text-xl font-extrabold whitespace-nowrap text-headline dark:text-headline-dark">{bestScore}</p>
-            </div>
-            <div className="card !p-4">
-              <p className="text-xs whitespace-nowrap text-brand-400">Words Found</p>
-              <p className="text-xl font-extrabold whitespace-nowrap text-brand-700 dark:text-white">{bestWords.length}</p>
-            </div>
-            <div className="card !p-4">
-              <p className="text-xs whitespace-nowrap text-brand-400">Eval Time</p>
-              <p className="text-lg font-extrabold whitespace-nowrap text-brand-700 dark:text-white">
-                {evalTimeMs === null ? "Not yet" : `${evalTimeMs.toFixed(0)}ms`}
-              </p>
-            </div>
-            <div className="card !p-4">
-              <p className="text-xs whitespace-nowrap text-brand-400">Status</p>
-              <p className="text-lg font-extrabold whitespace-nowrap text-brand-700 dark:text-white">{running ? "Running" : "Idle"}</p>
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center justify-between">
-            <p className="text-sm font-semibold text-gray-900 dark:text-gray-200">
-              {boardMode === "best" ? "Best Board" : "Fill Your Own Board"}
+      <div className="mt-6 grid grid-cols-2 gap-3 text-center sm:grid-cols-3 lg:grid-cols-5">
+        {[
+          { label: "Generation", value: generation.toLocaleString("en-US"), accent: false },
+          { label: "Best Score", value: `${bestScore.toLocaleString("en-US")}${bestWords.some((w) => w.length >= 9) ? "+" : ""}`, accent: true },
+          { label: "Words Found", value: bestWords.length.toLocaleString("en-US"), accent: false },
+          { label: "Eval Time", value: evalTimeMs === null ? "Not yet" : `${evalTimeMs.toFixed(0)} ms`, accent: false },
+          { label: "Status", value: running ? "Running" : "Idle", accent: false },
+        ].map((st, idx) => (
+          <div
+            key={st.label}
+            className={`${idx === 4 ? "col-span-2 sm:col-span-1 " : ""}flex min-h-24 min-w-0 flex-col items-center justify-center rounded-2xl border px-3 py-4 ${
+              st.accent
+                ? "border-headline/30 bg-accent-500/40 dark:border-headline-dark/40 dark:bg-brand-800"
+                : "border-brand-100 bg-white dark:border-brand-700 dark:bg-brand-900"
+            }`}
+          >
+            <p className="text-xs font-semibold uppercase tracking-wide text-brand-400 dark:text-brand-300">{st.label}</p>
+            <p
+              className={`mt-1 whitespace-nowrap text-2xl font-extrabold tabular-nums leading-tight ${
+                st.accent ? "text-headline dark:text-headline-dark" : "text-brand-700 dark:text-white"
+              }`}
+            >
+              {st.value}
             </p>
-            <div className="flex overflow-hidden rounded-lg border border-brand-100 text-xs font-semibold dark:border-brand-700">
-              <button
-                onClick={() => setBoardMode("best")}
-                className={`px-3 py-1.5 ${boardMode === "best" ? "bg-headline text-white" : "bg-white text-gray-900 dark:bg-brand-900 dark:text-white"}`}
-              >
-                Best Board
-              </button>
-              <button
-                onClick={() => setBoardMode("manual")}
-                className={`px-3 py-1.5 ${boardMode === "manual" ? "bg-headline text-white" : "bg-white text-gray-900 dark:bg-brand-900 dark:text-white"}`}
-              >
-                Fill My Own
-              </button>
-            </div>
           </div>
+        ))}
+      </div>
 
-          {boardMode === "best" ? (
-            <div className="mt-2 grid max-w-xs gap-1.5" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
-              {bestBoard.map((l, i) => (
-                <div key={i} className="flex aspect-square items-center justify-center rounded-lg border-2 border-brand-100 bg-white text-lg font-bold text-brand-700 dark:border-brand-700 dark:bg-brand-900 dark:text-white">
-                  {l}
-                </div>
-              ))}
-            </div>
-          ) : (
-            <>
-              <p className="mt-1 text-xs text-brand-400">Type your own letters to build a board by hand.</p>
-              <div className="mt-2 grid max-w-xs gap-1.5" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
-                {manualBoard.map((l, i) => (
-                  <input
-                    key={i}
-                    value={l}
-                    onChange={(e) => setManualCell(i, e.target.value)}
-                    maxLength={1}
-                    inputMode="text"
-                    autoComplete="off"
-                    aria-label={`Manual board letter ${i + 1}`}
-                    className="aspect-square w-full rounded-lg border-2 border-brand-100 bg-white text-center text-lg font-bold uppercase text-brand-700 outline-none focus:border-headline dark:border-brand-700 dark:bg-brand-900 dark:text-white"
-                  />
-                ))}
+      <div className="mt-6 grid gap-6 lg:grid-cols-2">
+        <div className="rounded-2xl border border-brand-100 bg-white p-5 dark:border-brand-700 dark:bg-brand-900">
+          <p className="text-sm font-bold text-gray-900 dark:text-white">Best Board</p>
+          <div className="mx-auto mt-3 grid max-w-sm gap-2" style={{ gridTemplateColumns: `repeat(${size}, minmax(0,1fr))` }}>
+            {bestBoard.map((l, i) => (
+              <div key={i} className="flex aspect-square items-center justify-center rounded-xl border-2 border-brand-100 bg-white text-xl font-bold text-brand-700 shadow-sm dark:border-brand-700 dark:bg-brand-800 dark:text-white">
+                {l}
               </div>
-            </>
-          )}
+            ))}
+          </div>
         </div>
 
-        <div>
-          <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Score Over Generations</p>
-          <svg viewBox="0 0 300 100" preserveAspectRatio="none" className="h-24 w-full rounded-lg border border-brand-100 bg-white dark:border-brand-700 dark:bg-brand-900">
+        <div className="rounded-2xl border border-brand-100 bg-white p-5 dark:border-brand-700 dark:bg-brand-900">
+          <p className="mb-2 text-sm font-bold text-gray-900 dark:text-white">Score Over Generations</p>
+          <svg viewBox="0 0 300 100" preserveAspectRatio="none" className="h-28 w-full rounded-lg border border-brand-100 bg-brand-50/50 dark:border-brand-700 dark:bg-brand-800">
             {history.length > 1 && (
               <polyline
                 fill="none"
@@ -308,12 +249,12 @@ export default function BoardEvolver() {
             )}
           </svg>
 
-          <p className="mt-4 mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">Words</p>
+          <p className="mt-4 mb-2 flex items-center justify-between text-sm font-bold text-gray-900 dark:text-white">Words on the Best Board<span className="rounded-full bg-brand-50 px-2 py-0.5 text-xs text-brand-600 dark:bg-brand-800 dark:text-brand-200">{bestWords.length}</span></p>
           <div className="flex max-h-40 flex-wrap gap-2 overflow-y-auto">
             {bestWords.length === 0 && <p className="text-sm text-brand-400">No words yet, start the evolution.</p>}
             {bestWords.map((w) => (
               <span key={w} className="rounded-lg border border-secondary-300 px-2.5 py-1 text-xs font-semibold text-secondary-600 dark:border-secondary-600/40 dark:text-secondary-300">
-                {w.toUpperCase()}
+                {w.toUpperCase()} <span className="opacity-70">+{(w.length >= 8 ? 2200 : ({ 3: 100, 4: 400, 5: 800, 6: 1400, 7: 1800 } as Record<number, number>)[w.length] ?? 0).toLocaleString("en-US")}{w.length >= 9 ? "+" : ""}</span>
               </span>
             ))}
           </div>

@@ -1,9 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { scanScreenshot } from "../lib/scanUpload";
 
 const MIN_SIZE = 3;
 const MAX_SIZE = 6;
 const DEFAULT_SIZE = 4;
 const MIN_WORD_LEN = 3;
+const SAVE_KEY = "wh_last_board";
 
 const POINTS: Record<number, number> = {
   3: 100,
@@ -13,7 +15,8 @@ const POINTS: Record<number, number> = {
   7: 1800,
 };
 function pointsFor(len: number) {
-  if (len >= 8) return 2200 + (len - 8) * 400;
+  // Scoring above 8 letters is not confirmed, so 9+ letter words count as 2,200 (a minimum).
+  if (len >= 8) return 2200;
   return POINTS[len] ?? 0;
 }
 
@@ -59,6 +62,79 @@ export default function WordHuntSolver() {
   const [activeWord, setActiveWord] = useState<FoundWord | null>(null);
   const trieRef = useRef<TrieNode | null>(null);
   const inputsRef = useRef<(HTMLInputElement | null)[][]>([]);
+  const fileRef = useRef<HTMLInputElement | null>(null);
+  const [unsure, setUnsure] = useState<boolean[][] | null>(null);
+  const [scanMsg, setScanMsg] = useState<{ kind: "info" | "warn" | "error"; text: string } | null>(null);
+  const [scanning, setScanning] = useState(false);
+  const [lenFilter, setLenFilter] = useState<number>(0); // 0 = all, 8 = 8 or more
+  const [startsWith, setStartsWith] = useState("");
+  const [endsWith, setEndsWith] = useState("");
+  const [copied, setCopied] = useState(false);
+  const restoredRef = useRef(false);
+
+  // Remember the last board on this device only (browser storage, never sent anywhere).
+  useEffect(() => {
+    try {
+      const saved = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+      if (
+        saved &&
+        Number.isInteger(saved.rows) && Number.isInteger(saved.cols) &&
+        saved.rows >= MIN_SIZE && saved.rows <= MAX_SIZE &&
+        saved.cols >= MIN_SIZE && saved.cols <= MAX_SIZE &&
+        Array.isArray(saved.grid) && saved.grid.length === saved.rows &&
+        saved.grid.every((row: unknown) => Array.isArray(row) && row.length === saved.cols &&
+          row.every((ch) => typeof ch === "string" && /^[A-Z]?$/.test(ch)))
+      ) {
+        setRows(saved.rows);
+        setCols(saved.cols);
+        setGrid(saved.grid);
+      }
+    } catch {}
+    restoredRef.current = true;
+  }, []);
+
+  useEffect(() => {
+    if (!restoredRef.current) return;
+    try {
+      if (grid.some((row) => row.some((ch) => ch))) {
+        localStorage.setItem(SAVE_KEY, JSON.stringify({ rows, cols, grid }));
+      } else {
+        localStorage.removeItem(SAVE_KEY);
+      }
+    } catch {}
+  }, [rows, cols, grid]);
+
+  async function onUpload(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setScanning(true);
+    setScanMsg(null);
+    const r = await scanScreenshot(file);
+    setScanning(false);
+    if (!r.ok) {
+      const text = {
+        type: "Please upload a PNG, JPG, or WebP image.",
+        load: "We couldn't open that image. Try another screenshot.",
+        noboard: "We couldn't find a Word Hunt board in this image. Upload a screenshot that shows the full board.",
+        size: "We found a grid, but its size isn't between 3x3 and 6x6. Set the rows and columns and type the letters instead.",
+      }[r.reason];
+      setScanMsg({ kind: "error", text });
+      return;
+    }
+    setRows(r.rows);
+    setCols(r.cols);
+    setGrid(r.letters);
+    setUnsure(r.unsure);
+    setResults(null);
+    setActiveWord(null);
+    const flagged = r.unsure.flat().filter(Boolean).length;
+    setScanMsg(
+      flagged
+        ? { kind: "warn", text: `Board found. Please check the ${flagged} highlighted tile${flagged === 1 ? "" : "s"}, fix any wrong letter, then tap Solve.` }
+        : { kind: "info", text: "Board found. Check the letters, then tap Solve." }
+    );
+  }
 
   useEffect(() => {
     setStatus("loading-dict");
@@ -84,6 +160,7 @@ export default function WordHuntSolver() {
     });
     setResults(null);
     setActiveWord(null);
+    setUnsure(null);
   }
 
   function changeRows(delta: number) {
@@ -99,6 +176,12 @@ export default function WordHuntSolver() {
 
   function setCell(r: number, c: number, val: string) {
     const letter = val.replace(/[^a-zA-Z]/g, "").slice(-1).toUpperCase();
+    setUnsure((u) => {
+      if (!u?.[r]?.[c]) return u;
+      const next = u.map((row) => row.slice());
+      next[r][c] = false;
+      return next;
+    });
     setGrid((old) => {
       const next = old.map((row) => row.slice());
       next[r][c] = letter;
@@ -125,6 +208,8 @@ export default function WordHuntSolver() {
 
   function clearBoard() {
     setGrid(emptyGrid(rows, cols));
+    setUnsure(null);
+    setScanMsg(null);
     setResults(null);
     setActiveWord(null);
     inputsRef.current[0]?.[0]?.focus();
@@ -176,18 +261,95 @@ export default function WordHuntSolver() {
 
     setResults(list);
     setActiveWord(list[0] ?? null);
+    setLenFilter(0);
+    setStartsWith("");
+    setEndsWith("");
     setStatus("ready");
   }
 
-  const isCellInPath = (r: number, c: number) =>
-    activeWord?.path.some(([pr, pc]) => pr === r && pc === c) ?? false;
+  const pathIndex = (r: number, c: number) =>
+    activeWord ? activeWord.path.findIndex(([pr, pc]) => pr === r && pc === c) : -1;
+
+  const summary = useMemo(() => {
+    if (!results) return null;
+    const counts = new Map<number, number>();
+    let total = 0;
+    let hasLong = false;
+    for (const w of results) {
+      const len = w.word.length;
+      counts.set(len, (counts.get(len) ?? 0) + 1);
+      total += pointsFor(len);
+      if (len >= 9) hasLong = true;
+    }
+    const lengths = Array.from(counts.keys()).sort((a, b) => b - a);
+    return { counts, total, hasLong, lengths };
+  }, [results]);
+
+  const filtered = useMemo(() => {
+    if (!results) return [];
+    const sw = startsWith.toLowerCase();
+    const ew = endsWith.toLowerCase();
+    return results.filter((w) => {
+      const len = w.word.length;
+      if (lenFilter === 8 ? len < 8 : lenFilter && len !== lenFilter) return false;
+      if (sw && !w.word.startsWith(sw)) return false;
+      if (ew && !w.word.endsWith(ew)) return false;
+      return true;
+    });
+  }, [results, lenFilter, startsWith, endsWith]);
+
+  const groups = useMemo(() => {
+    const map = new Map<number, FoundWord[]>();
+    for (const w of filtered) {
+      const len = w.word.length;
+      if (!map.has(len)) map.set(len, []);
+      map.get(len)!.push(w);
+    }
+    return Array.from(map.entries()).sort((a, b) => b[0] - a[0]);
+  }, [filtered]);
+
+  const filterOptions = useMemo(() => {
+    if (!summary) return [];
+    const opts = new Set<number>();
+    for (const len of summary.lengths) opts.add(Math.min(len, 8));
+    return Array.from(opts).sort((a, b) => a - b);
+  }, [summary]);
+
+  async function copyWords() {
+    const text = groups
+      .map(([len, words]) => `${len} letters: ${words.map((w) => w.word.toUpperCase()).join(", ")}`)
+      .join("\n");
+    let ok = false;
+    try {
+      await navigator.clipboard.writeText(text);
+      ok = true;
+    } catch {
+      try {
+        const ta = document.createElement("textarea");
+        ta.value = text;
+        ta.setAttribute("readonly", "");
+        ta.style.position = "fixed";
+        ta.style.opacity = "0";
+        document.body.appendChild(ta);
+        ta.select();
+        ok = document.execCommand("copy");
+        document.body.removeChild(ta);
+      } catch {}
+    }
+    if (ok) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
+  }
+
+  const letterFilter = (v: string) => v.replace(/[^a-zA-Z]/g, "").toUpperCase().slice(0, 6);
 
   const hasAnyLetter = useMemo(() => grid.some((row) => row.some((c) => c)), [grid]);
 
   return (
     <div className="card">
       <div className="flex flex-wrap items-center justify-between gap-4">
-        <div className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
+        <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
           <span>Rows</span>
           <div className="flex items-center rounded-lg border border-brand-100 dark:border-brand-700">
             <button onClick={() => changeRows(-1)} className="px-2 py-1 hover:bg-brand-50 dark:hover:bg-brand-700" aria-label="Decrease rows">-</button>
@@ -211,9 +373,11 @@ export default function WordHuntSolver() {
         style={{ gridTemplateColumns: `repeat(${cols}, minmax(0,1fr))` }}
       >
         {grid.map((row, r) =>
-          row.map((val, c) => (
+          row.map((val, c) => {
+            const idx = pathIndex(r, c);
+            return (
+            <div key={`${r}-${c}`} className="relative">
             <input
-              key={`${r}-${c}`}
               ref={(el) => {
                 inputsRef.current[r] ??= [];
                 inputsRef.current[r][c] = el;
@@ -226,14 +390,34 @@ export default function WordHuntSolver() {
               autoComplete="off"
               aria-label={`Letter row ${r + 1} column ${c + 1}`}
               className={`aspect-square w-full rounded-xl border-2 text-center text-xl font-bold uppercase outline-none transition ${
-                isCellInPath(r, c)
+                unsure?.[r]?.[c]
+                  ? "border-warning bg-warning-bg text-brand-700"
+                  : idx === 0
+                  ? "border-headline bg-accent-500/30 text-brand-700 dark:border-accent-300 dark:text-accent-300"
+                  : idx > 0
                   ? "border-accent-500 bg-accent-500/20 text-brand-700 dark:text-accent-300"
                   : "border-brand-100 bg-white text-brand-700 focus:border-brand-500 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
               }`}
             />
-          ))
+            {idx >= 0 && !unsure?.[r]?.[c] && (
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute left-1 top-1 inline-flex h-5 min-w-5 items-center justify-center rounded-full bg-headline px-1 text-[11px] font-bold leading-none text-white dark:bg-headline-dark"
+              >
+                {idx + 1}
+              </span>
+            )}
+            </div>
+            );
+          })
         )}
       </div>
+
+      {activeWord && (
+        <p className="mt-3 text-center text-sm text-gray-600 dark:text-gray-300" aria-live="polite">
+          Swipe <strong className="text-gray-900 dark:text-white">{activeWord.word.toUpperCase()}</strong> by following the numbers, starting at tile 1.
+        </p>
+      )}
 
       <div className="mt-5 flex flex-wrap justify-center gap-3">
         <button onClick={solve} disabled={!hasAnyLetter || status !== "ready" && status !== "idle"} className="btn-accent disabled:opacity-50">
@@ -242,30 +426,128 @@ export default function WordHuntSolver() {
         <button onClick={clearBoard} className="btn-primary bg-brand-100 text-brand-600 hover:bg-brand-200 dark:bg-brand-700 dark:text-white">
           Clear
         </button>
+        <button onClick={() => fileRef.current?.click()} disabled={scanning} className="btn-primary disabled:opacity-50">
+          {scanning ? "Reading board..." : "Upload Screenshot"}
+        </button>
+        <input ref={fileRef} type="file" accept="image/png,image/jpeg,image/webp" onChange={onUpload} className="hidden" aria-label="Upload a screenshot of your Word Hunt board" />
       </div>
 
-      {results && (
+      {scanMsg && (
+        <p role="status" className={`mt-3 rounded-lg px-3 py-2 text-center text-sm ${scanMsg.kind === "error" ? "bg-error-bg text-brand-700" : scanMsg.kind === "warn" ? "bg-warning-bg text-brand-700" : "bg-success-bg text-brand-700"}`}>
+          {scanMsg.text}
+        </p>
+      )}
+
+      <p className="mt-3 text-center text-sm text-gray-600 dark:text-gray-300">
+        Upload a clear screenshot of your full Word Hunt board (PNG, JPG, or WebP), and the letters fill in for you to check.
+      </p>
+
+      {results && summary && (
         <div className="mt-6 border-t border-brand-100 pt-5 dark:border-brand-700">
-          <p className="mb-3 text-sm font-semibold text-gray-900 dark:text-gray-200">
-            {results.length} word{results.length === 1 ? "" : "s"} found
-          </p>
-          <div className="flex max-h-56 flex-wrap gap-2 overflow-y-auto">
-            {results.map((r) => (
-              <button
-                key={r.word}
-                onMouseEnter={() => setActiveWord(r)}
-                onClick={() => setActiveWord(r)}
-                className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
-                  activeWord?.word === r.word
-                    ? "border-accent-500 bg-accent-500/20 text-brand-700 dark:text-accent-300"
-                    : "border-secondary-300 text-secondary-600 hover:border-accent-500 dark:border-secondary-600/40 dark:text-secondary-300"
-                }`}
-              >
-                {r.word.toUpperCase()} <span className="text-xs opacity-70">+{pointsFor(r.word.length)}</span>
-              </button>
+          <div className="grid grid-cols-2 gap-3">
+            <div className="rounded-xl border border-brand-100 p-3 text-center dark:border-brand-700">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">Words Found</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{results.length.toLocaleString("en-US")}</p>
+            </div>
+            <div className="rounded-xl border border-brand-100 p-3 text-center dark:border-brand-700">
+              <p className="text-xs font-semibold uppercase tracking-wide text-gray-600 dark:text-gray-300">Total Points</p>
+              <p className="mt-1 text-2xl font-bold text-gray-900 dark:text-white">{summary.total.toLocaleString("en-US")}{summary.hasLong ? "+" : ""}</p>
+            </div>
+          </div>
+
+          {results.length > 0 && (
+            <>
+              <div className="mt-3 flex flex-wrap justify-center gap-2 text-xs">
+                {summary.lengths.map((len) => (
+                  <span key={len} className="rounded-full bg-brand-50 px-2.5 py-1 font-semibold text-brand-700 dark:bg-white/10 dark:text-gray-200">
+                    {len} letters: {summary.counts.get(len)}
+                  </span>
+                ))}
+              </div>
+
+              <div className="mt-4 flex flex-wrap items-center gap-2" role="group" aria-label="Filter by word length">
+                <span className="text-sm font-semibold text-gray-900 dark:text-gray-200">Length</span>
+                {[0, ...filterOptions].map((opt) => (
+                  <button
+                    key={opt}
+                    onClick={() => setLenFilter(opt)}
+                    aria-pressed={lenFilter === opt}
+                    className={`rounded-lg border px-2.5 py-1 text-sm font-semibold transition ${
+                      lenFilter === opt
+                        ? "border-accent-500 bg-accent-500/20 text-brand-700 dark:text-accent-300"
+                        : "border-brand-100 text-gray-700 hover:border-accent-500 dark:border-brand-700 dark:text-gray-200"
+                    }`}
+                  >
+                    {opt === 0 ? "All" : opt === 8 ? "8+" : opt}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-[1fr_1fr_auto]">
+                <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                  Starts with
+                  <input
+                    value={startsWith}
+                    onChange={(e) => setStartsWith(letterFilter(e.target.value))}
+                    autoComplete="off"
+                    placeholder="e.g. RE"
+                    className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-sm font-normal uppercase text-brand-700 outline-none placeholder:normal-case focus:border-brand-500 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
+                  />
+                </label>
+                <label className="text-sm font-semibold text-gray-900 dark:text-gray-200">
+                  Ends with
+                  <input
+                    value={endsWith}
+                    onChange={(e) => setEndsWith(letterFilter(e.target.value))}
+                    autoComplete="off"
+                    placeholder="e.g. ING"
+                    className="mt-1 w-full rounded-lg border border-brand-100 bg-white px-2 py-1.5 text-sm font-normal uppercase text-brand-700 outline-none placeholder:normal-case focus:border-brand-500 dark:border-brand-700 dark:bg-brand-900 dark:text-white"
+                  />
+                </label>
+                <button
+                  onClick={copyWords}
+                  disabled={filtered.length === 0}
+                  className="btn-primary col-span-2 self-end disabled:opacity-50 sm:col-span-1"
+                >
+                  {copied ? "Copied!" : filtered.length === results.length ? "Copy All Words" : `Copy ${filtered.length} Words`}
+                </button>
+              </div>
+
+              <p className="mt-3 text-sm text-gray-600 dark:text-gray-300" role="status">
+                Showing {filtered.length.toLocaleString("en-US")} of {results.length.toLocaleString("en-US")} words
+              </p>
+            </>
+          )}
+
+          <div className="mt-2 max-h-96 overflow-y-auto pr-1">
+            {groups.map(([len, words]) => (
+              <div key={len} className="mt-3 first:mt-0">
+                <p className="mb-2 text-sm font-semibold text-gray-900 dark:text-gray-200">
+                  {len} Letters <span className="font-normal text-gray-600 dark:text-gray-300">({words.length}, {pointsFor(len).toLocaleString("en-US")}{len >= 9 ? "+" : ""} points each)</span>
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {words.map((r) => (
+                    <button
+                      key={r.word}
+                      onMouseEnter={() => setActiveWord(r)}
+                      onClick={() => setActiveWord(r)}
+                      className={`rounded-lg border px-3 py-1.5 text-sm font-semibold transition ${
+                        activeWord?.word === r.word
+                          ? "border-accent-500 bg-accent-500/20 text-brand-700 dark:text-accent-300"
+                          : "border-secondary-300 text-secondary-600 hover:border-accent-500 dark:border-secondary-600/40 dark:text-secondary-300"
+                      }`}
+                    >
+                      {r.word.toUpperCase()} <span className="text-xs opacity-70">+{pointsFor(r.word.length).toLocaleString("en-US")}{r.word.length >= 9 ? "+" : ""}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
             ))}
             {results.length === 0 && (
               <p className="text-sm text-brand-400">No words found. Double check your letters and try again.</p>
+            )}
+            {results.length > 0 && filtered.length === 0 && (
+              <p className="text-sm text-gray-600 dark:text-gray-300">No words match these filters.</p>
             )}
           </div>
         </div>

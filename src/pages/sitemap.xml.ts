@@ -1,15 +1,17 @@
 const SITE = "https://www.wordhuntsolvers.com";
 
+// Update a page's lastmod date only when that page's content actually changes.
 const pages = [
-  { path: "", priority: "1.0" },
-  { path: "/evolver", priority: "0.8" },
-  { path: "/guides", priority: "0.8" },
-  { path: "/guides/word-hunt-cheat", priority: "0.7" },
-  { path: "/guides/free-word-finder", priority: "0.7" },
-  { path: "/guides/wordscapes-help", priority: "0.7" },
-  { path: "/contact", priority: "0.5" },
-  { path: "/privacy-policy", priority: "0.3" },
-  { path: "/terms-and-conditions", priority: "0.3" },
+  { path: "", lastmod: "2026-10-08" },
+  { path: "/evolver", lastmod: "2026-10-06" },
+  { path: "/guides", lastmod: "2026-10-06" },
+  { path: "/guides/word-hunt-tips", lastmod: "2026-10-06" },
+  { path: "/guides/word-hunt-cheat", lastmod: "2026-10-06" },
+  { path: "/guides/word-hunt-solver-vs-word-finder", lastmod: "2026-10-06" },
+  { path: "/about", lastmod: "2026-10-06" },
+  { path: "/contact", lastmod: "2026-10-06" },
+  { path: "/privacy-policy", lastmod: "2026-10-08" },
+  { path: "/terms-and-conditions", lastmod: "2026-10-06" },
 ];
 
 export async function GET() {
@@ -19,7 +21,7 @@ ${pages
   .map(
     (p) => `  <url>
     <loc>${SITE}${p.path}</loc>
-    <priority>${p.priority}</priority>
+    <lastmod>${p.lastmod}</lastmod>
   </url>`
   )
   .join("\n")}
